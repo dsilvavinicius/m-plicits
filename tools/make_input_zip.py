@@ -56,18 +56,37 @@ def collect(src):
                     yield p, f"results/{shape}/{stage}/{name}"
 
 
+def collect_extra_tree(root, arc_prefix, skip_names=(".DS_Store",), skip_dirs=("__MACOSX",), skip_ext=(".zip",)):
+    """Renderer/attribute asset trees, junk filtered."""
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+        for f in sorted(filenames):
+            if f in skip_names or osp.splitext(f)[1] in skip_ext:
+                continue
+            p = osp.join(dirpath, f)
+            rel = osp.relpath(p, root).replace(os.sep, "/")
+            yield p, f"{arc_prefix}/{rel}"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True, help="path to the private i3d_work tree")
     ap.add_argument("--out", default="m-plicits-data.zip")
-    ap.add_argument("--extra", nargs="*", default=[],
-                    help="extra 'abs_path:arc_path' pairs (renderer/attribute assets)")
+    ap.add_argument("--renderer-data", default=None,
+                    help="path to the renderer checkpoint folder (src/cuda/data)")
+    ap.add_argument("--attributes-data", default=None,
+                    help="path to the attributes data folder")
+    ap.add_argument("--attributes-shapenets", default=None,
+                    help="path to the attributes shapeNets folder")
     args = ap.parse_args()
 
     pairs = list(collect(args.src))
-    for e in args.extra:
-        a, _, arc = e.partition(":")
-        pairs.append((a, arc))
+    if args.renderer_data:
+        pairs += list(collect_extra_tree(args.renderer_data, "renderer/cuda/data"))
+    if args.attributes_data:
+        pairs += list(collect_extra_tree(args.attributes_data, "attributes/data"))
+    if args.attributes_shapenets:
+        pairs += list(collect_extra_tree(args.attributes_shapenets, "attributes/shapeNets"))
 
     manifest, sums = [], []
     total = 0

@@ -76,10 +76,26 @@ regenerate them from scratch use `tools/perturb_mesh.py` (general) or
 inputs). `appendix_experiments/fix_thai_normals.py` documents the
 zero-length-normal repair applied to the Thai input.
 
-## 5. Real-time renderer (Tabs. 4, 5; FPS columns of Tab. 2)
+## 5. Real-time renderer (Tab. 4; FPS columns of Tab. 2)
 
-See `renderer/README.md`. <!-- filled by the renderer integration -->
+Build and usage in `renderer/README.md` (Windows + CUDA). The new
+`-benchmark=<N>` mode prints and logs the average FPS, replacing the
+window-title readout used for the paper. To match Tab. 4's protocol: 512²
+resolution (default build), 20 sphere-tracing iterations on the first SDF
+and 5 per subsequent level, LoD and normal-mapping toggles set in the ImGui
+panel per row. Absolute FPS is hardware-dependent (the paper used an RTX
+5090); relative orderings between rows are the reproducible claim.
 
-## 6. Attribute mapping (normal/texture figures)
+```bash
+renderer/cuda/build/Release/MIP-plicitsRenderer.exe -list
+renderer/cuda/build/Release/MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500
+```
 
-See `attributes/README.md`. <!-- filled by the attributes integration -->
+## 6. Attribute (texture) mapping — suppl. attribute section
+
+Texture training/evaluation in `attributes/README.md` (its own conda env;
+PyTorch3D). Reproduces the texture figures and the texture MSE table; the
+"Egg" row's asset is not part of the released archive. Neural *normal*
+mapping needs no training — it is the analytic gradient of a finer SDF,
+rendered by the real-time renderer (normal-mapping toggle / NM rows of
+Tab. 4).

@@ -1,0 +1,17 @@
+name: neural_implicit_mapping
+channels:
+  - pytorch
+  - conda-forge
+  - nvidia
+  - defaults
+dependencies:
+  - numpy
+  - pandas
+  - python=3.10
+  - tqdm
+  - matplotlib
+  - pip
+  - pip:
+    #- open3d
+    # Open3D is not supported in Windows 11, so we had to install it manually compiling a pip package from the source code
+    - -r requirements.txt
