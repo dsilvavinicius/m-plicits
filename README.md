@@ -1,6 +1,7 @@
 # M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals
 
-Official code release. M-plicits models a signed distance function as a
+Official code release. Project page: `docs/` (served via GitHub Pages once
+enabled: Settings &rarr; Pages &rarr; deploy from `main` / `docs`). M-plicits models a signed distance function as a
 base SIREN plus a sequence of residual SIRENs, each supervised only inside
 the adaptive δ-band of the previous level's zero-level set. The nesting is
 a training-time invariant that the inference algorithms exploit: multiscale

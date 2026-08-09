@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals</title>
+<meta name="description" content="A noise-robust neural surface representation and the real-time algorithms it unlocks. NeurIPS 2026.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<!-- TODO on release: replace og:url / links marked TODO -->
+<meta property="og:title" content="M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals">
+<meta property="og:description" content="Noise-robust neural surfaces, in real time. NeurIPS 2026.">
+<meta property="og:image" content="assets/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals">
+<meta name="twitter:description" content="Noise-robust neural surfaces, in real time. NeurIPS 2026.">
+<meta name="twitter:image" content="assets/og.jpg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:#fafbfd;color:#111827;line-height:1.6}
+nav{position:sticky;top:0;background:rgba(250,251,253,.92);backdrop-filter:blur(8px);border-bottom:1px solid #e5e7eb;z-index:9}
+nav .in{max-width:1020px;margin:0 auto;padding:13px 24px;display:flex;justify-content:space-between;align-items:center}
+nav .logo{font-weight:800;color:#4f46e5}
+nav .links a{color:#4b5563;text-decoration:none;margin-left:20px;font-size:14px}
+nav .links a:hover{color:#4f46e5}
+.wrap{max-width:1020px;margin:0 auto;padding:0 24px}
+header{text-align:center;padding:56px 0 8px}
+.venue{display:inline-block;padding:5px 14px;border-radius:999px;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:12.5px;letter-spacing:.1em}
+.display{font-size:52px;font-weight:800;letter-spacing:-.025em;line-height:1.06;margin:20px auto 14px;max-width:880px}
+.display em{font-style:normal;box-shadow:inset 0 -16px 0 #c7d2fe}
+.ptitle{font-size:19px;font-weight:700;color:#111827;max-width:860px;margin:0 auto}
+.sub{color:#4b5563;font-size:16.5px;max-width:780px;margin:10px auto 0}
+.authors{color:#6b7280;font-size:14.5px;margin-top:12px}
+.btns{margin:24px 0 6px}
+.btn{display:inline-block;margin:4px;padding:10px 20px;border-radius:10px;background:#111827;color:#fff;text-decoration:none;font-size:14px}
+.btn:hover{background:#4f46e5}
+.cmp{position:relative;max-width:760px;margin:36px auto 6px;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(17,24,39,.16);user-select:none;background:#fff}
+.cmp>img{display:block;width:100%;pointer-events:none}
+.cmp .top{position:absolute;inset:0;overflow:hidden}
+.cmp .top img{width:100%;height:100%;object-fit:cover}
+.cmp .bar{position:absolute;top:0;bottom:0;width:3px;background:#4f46e5;transform:translateX(-1.5px)}
+.cmp .knob{position:absolute;top:50%;width:44px;height:44px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transform:translate(-22px,-22px);box-shadow:0 6px 18px rgba(79,70,229,.5)}
+.cmp .tag{position:absolute;top:14px;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.06em;color:#fff}
+.tag.l{left:14px;background:#dc2626}.tag.r{right:14px;background:#059669}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize}
+.cmpcap{color:#6b7280;font-size:13.5px;text-align:center;margin:12px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:840px;margin:30px auto}
+.stat{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 6px;text-align:center}
+.stat .n{font-size:24px;font-weight:800;color:#4f46e5}
+.stat .l{font-size:12px;color:#6b7280}
+h2{font-size:27px;font-weight:800;margin:60px 0 10px;letter-spacing:-.01em}
+h2 span{color:#4f46e5}
+p.body{color:#374151;font-size:16px;max-width:840px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:20px 0}
+.card img,.card video{width:100%;border-radius:8px;display:block}
+.cap{font-size:13px;color:#6b7280;margin-top:10px;text-align:center}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.rcard{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;text-decoration:none;color:#111827;display:block}
+.rcard:hover{border-color:#4f46e5}
+.rcard .t{font-weight:800;margin-bottom:6px}
+.rcard .d{font-size:13.5px;color:#6b7280}
+pre{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;font-size:13px;overflow-x:auto;line-height:1.5}
+footer{margin:70px 0 40px;text-align:center;color:#9ca3af;font-size:13px}
+@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.display{font-size:34px}.res{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav><div class="in"><div class="logo">M&#8209;plicits</div><div class="links">
+<a href="#method">Method</a><a href="#results">Results</a><a href="#video">Video</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
+
+<div class="wrap">
+<header>
+<div class="venue">NEURIPS 2026 &middot; PROJECT PAGE</div>
+<h1 class="display">Surfaces that stay <em>clean</em><br>when the data is not.</h1>
+<div class="ptitle">M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals</div>
+<div class="sub">A noise-robust neural surface representation &mdash; and the real-time algorithms it unlocks.</div>
+<div class="authors">Authors revealed on acceptance</div>
+<div class="btns">
+<!-- TODO on release: point Paper/arXiv/Code/Data at their real URLs -->
+<a class="btn" href="#">&#128196; Paper</a>
+<a class="btn" href="#">&#128220; arXiv</a>
+<a class="btn" href="#">&#128187; Code</a>
+<a class="btn" href="#">&#128230; Data</a>
+<a class="btn" href="#video">&#127916; Video</a>
+</div>
+</header>
+
+<div class="cmp" id="cmp">
+<img src="assets/slider_ours.jpg" alt="M-plicits reconstruction from a noisy scan: clean cherub surface">
+<div class="top" id="cmpTop"><img src="assets/slider_ingp.jpg" alt="iNGP reconstruction from the same noisy scan: noise absorbed into the surface"></div>
+<div class="bar" id="cmpBar"></div><div class="knob" id="cmpKnob">&#8596;</div>
+<div class="tag l">iNGP &mdash; ABSORBS NOISE</div><div class="tag r">M&#8209;PLICITS &mdash; FILTERS IT</div>
+<input type="range" min="0" max="100" value="50" id="cmpRange" aria-label="Comparison slider: iNGP versus M-plicits on the same noisy input">
+</div>
+<div class="cmpcap"><b>Drag.</b> Both methods trained on the same scan with 1% noise.</div>
+
+<div class="stats">
+<div class="stat"><div class="n">35&ndash;180</div><div class="l">FPS real-time sphere tracing</div></div>
+<div class="stat"><div class="n">247K</div><div class="l">parameters for full detail</div></div>
+<div class="stat"><div class="n">1%</div><div class="l">input noise, filtered structurally</div></div>
+<div class="stat"><div class="n">5&times;</div><div class="l">faster mesh extraction</div></div>
+</div>
+
+<h2 id="method"><span>&#9632;</span> The representation</h2>
+<p class="body">M-plicits models a shape as a base network plus residuals trained only inside nested
+neighborhoods of the surface. The band-limited coarse level cannot fit high-frequency noise, and the
+residuals are never supervised where noise lives &mdash; robustness is structural, not a loss term.
+Every partial sum is itself a signed distance function, so coarser prefixes are levels of detail for free.</p>
+<div class="card"><img src="assets/teaser.jpg" alt="M-plicits overview: residual multiscale INR, noise robustness, attribute mapping">
+<div class="cap">Overview: residual multiscale representation &middot; noise robustness &middot; attribute mapping.</div></div>
+<div class="card"><img src="assets/pipeline.jpg" alt="Training pipeline with nested neighborhoods">
+<div class="cap">Nested neighborhoods concentrate supervision near the surface &mdash; and license the fast inference below.</div></div>
+<p class="body">The nesting is an invariant the renderer can rely on: multiscale sphere tracing cannot
+miss the surface, marching cubes culled by the coarse band extract up to 5&times; faster, and GEMM-based
+analytical normals need no autograd &mdash; real-time rendering and attribute mapping from one compact model.
+Details are in the paper.</p>
+
+<h2 id="results"><span>&#9632;</span> Results</h2>
+<div class="card"><img src="assets/noise.jpg" alt="Noise comparison: iNGP and BACON absorb noise, IDF fragments, M-plicits recovers the surface">
+<div class="cap">Under 1% noise: iNGP and BACON absorb it, IDF fragments &mdash; M-plicits recovers the cherubs.</div></div>
+<div class="card"><img src="assets/fines.jpg" alt="Fine-level qualitative comparison against iNGP, BACON, IDF">
+<div class="cap">Fine-level quality against iNGP, BACON and IDF.</div></div>
+
+<h2 id="video"><span>&#9632;</span> Video</h2>
+<div class="card">
+<video controls preload="metadata" poster="assets/poster.jpg">
+<source src="assets/results.mp4" type="video/mp4">
+Your browser does not support the video tag &mdash; <a href="assets/results.mp4">download the video</a>.
+</video>
+<div class="cap">Turntable comparisons &mdash; every method trained on the same scan with 1% noise.</div>
+</div>
+
+<h2 id="resources"><span>&#9632;</span> Resources</h2>
+<div class="res">
+<a class="rcard" href="#"><div class="t">&#128187; Code</div><div class="d">Training, evaluation protocol, appendix experiments, the real-time CUDA renderer, and texture mapping &mdash; one repository.</div></a>
+<a class="rcard" href="#"><div class="t">&#128230; Data &amp; models</div><div class="d">All point clouds (clean, noisy, outlier-contaminated) and released checkpoints in a single archive with checksums.</div></a>
+<a class="rcard" href="#"><div class="t">&#128196; Paper</div><div class="d">Method details, evaluation protocol, isolation ablations, and the appendix robustness studies.</div></a>
+</div>
+
+<h2 id="bib"><span>&#9632;</span> BibTeX</h2>
+<pre>@inproceedings{mplicits2026,
+  title     = {M-plicits: Neural Implicit Surfaces via
+               Nested Multiscale Residuals},
+  author    = {(revealed on acceptance)},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026}
+}</pre>
+
+<footer>M-plicits &middot; NeurIPS 2026 &middot; code, data and released models on acceptance</footer>
+</div>
+
+<script>
+const r=document.getElementById('cmpRange'),t=document.getElementById('cmpTop'),
+b=document.getElementById('cmpBar'),k=document.getElementById('cmpKnob');
+function set(v){t.style.clipPath='inset(0 '+(100-v)+'% 0 0)';b.style.left=v+'%';k.style.left=v+'%';}
+r.addEventListener('input',e=>set(+e.target.value));set(50);
+</script>
+</body>
+</html>
