@@ -1,0 +1,14 @@
+name: metrics
+channels:
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - cuda-toolkit=12.8
+  - pandas
+  - trimesh
+  - open3d
+  - tqdm
+  - pip:
+      - -r requirements.txt

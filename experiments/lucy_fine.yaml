@@ -1,0 +1,25 @@
+network:
+  hidden_layers: [400,400]
+  omega_0: 128
+  omega_w: 128
+  in_coords: 3
+  out_coords: 1
+  residual: True
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  coarse_model: "results/lucy_coarse/best.pth"
+  level1: "results/lucy_medium/best.pth"
+  epochs: 1000
+  batchsize: 300000
+  delta: 0.001
+  neighborhood_delta: True
+  dithering_sampling: True
+
+sampling:
+  type: uniform  # curvature or uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

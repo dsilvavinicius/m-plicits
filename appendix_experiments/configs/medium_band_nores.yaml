@@ -1,0 +1,27 @@
+# Cell (c): nested band WITHOUT residual (independent SDF per level trained in
+# the band of the previous level), medium stage. Same architecture/epochs as
+# cell (a) medium; residual False switches to loss_sdf_on_neighborhood.
+network:
+  hidden_layers: [256, 256]
+  omega_0: 45
+  omega_w: 45
+  in_coords: 3
+  out_coords: 1
+  residual: False
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 1500
+  delta: 0.001
+  batchsize: 900000
+  neighborhood_delta: True
+  dithering_sampling: True
+  resample_sdf_at: 10
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

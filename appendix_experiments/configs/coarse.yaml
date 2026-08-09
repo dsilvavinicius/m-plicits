@@ -1,0 +1,20 @@
+network:
+  hidden_layers: [128, 128]
+  omega_0: 30
+  omega_w: 30
+  in_coords: 3
+  out_coords: 1
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 3500
+  resample_sdf_at: 5
+  batchsize: 900000
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

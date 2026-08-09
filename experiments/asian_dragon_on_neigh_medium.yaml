@@ -1,0 +1,24 @@
+network:
+  hidden_layers: [256,256]
+  omega_0: 80
+  omega_w: 80
+  in_coords: 3
+  out_coords: 1
+  residual: True
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  coarse_model: "results/asian_dragon_coarse/best.pth"
+  epochs: 1000
+  batchsize: 700000
+  delta: 0.006
+  neighborhood_delta: True
+  dithering_sampling: True
+
+sampling:
+  type: uniform  # curvature or uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

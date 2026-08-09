@@ -1,0 +1,22 @@
+# Cell (b): residual WITHOUT nested band (full-domain Sitzmann-style sampling),
+# fine stage. Same architecture/epochs as cell (a) fine.
+network:
+  hidden_layers: [400, 400]
+  omega_0: 100
+  omega_w: 100
+  in_coords: 3
+  out_coords: 1
+  residual: True
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 1500
+  batchsize: 400000
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

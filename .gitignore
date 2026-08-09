@@ -1,0 +1,41 @@
+# Data (distributed separately as m-plicits-data.zip — see data/README.md)
+data/
+results/
+outputs/
+
+# Experiment outputs
+appendix_experiments/results/
+appendix_experiments/meshes*/
+appendix_experiments/metrics/
+appendix_experiments/outliers/
+appendix_experiments/outlier_meshes/
+appendix_experiments/undertrained*/
+appendix_experiments/smoke/
+appendix_experiments/*.csv
+appendix_experiments/*.json
+appendix_experiments/*.tex
+appendix_experiments/*.log
+appendix_experiments/logs/
+rec/
+runs/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+
+# Builds
+build/
+dist/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

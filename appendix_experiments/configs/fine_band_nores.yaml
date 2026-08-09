@@ -1,0 +1,26 @@
+# Cell (c): nested band WITHOUT residual, fine stage. The previous level's
+# standalone SDF plays the role of the "coarse" model for the band computation.
+network:
+  hidden_layers: [400, 400]
+  omega_0: 100
+  omega_w: 100
+  in_coords: 3
+  out_coords: 1
+  residual: False
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 1500
+  delta: 0.002
+  batchsize: 400000
+  neighborhood_delta: True
+  dithering_sampling: True
+  resample_sdf_at: 10
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

@@ -1,0 +1,24 @@
+# Cell (d): single SIREN at matched parameter budget.
+# (350,3) = 247,451 params vs 246,627 for the full 3-level M-plicits (+0.3%).
+# omega_0 = 30 (standard SIREN choice). Epoch budget = 3500+1500+1500 = 6500,
+# matching the total staged schedule of cells (a)-(c).
+network:
+  hidden_layers: [350, 350, 350]
+  omega_0: 30
+  omega_w: 30
+  in_coords: 3
+  out_coords: 1
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 6500
+  resample_sdf_at: 5
+  batchsize: 900000
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

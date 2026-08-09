@@ -1,0 +1,2 @@
+# Install with: pip install --no-build-isolation -r requirements-pytorch3d.txt
+pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git@v0.7.9

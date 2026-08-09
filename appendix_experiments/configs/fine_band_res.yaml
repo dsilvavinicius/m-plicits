@@ -1,0 +1,31 @@
+# Cell (a): residual + nested band, fine stage. Mirrors the paper setup
+# (results/<shape>/fine/config.yaml): (400,2), omega 100.
+network:
+  hidden_layers: [400, 400]
+  omega_0: 100
+  omega_w: 100
+  in_coords: 3
+  out_coords: 1
+  residual: True
+
+optimizer:
+  lr: 0.0001
+  type: adam
+
+training:
+  epochs: 1500
+  delta: 0.002
+  batchsize: 400000
+  neighborhood_delta: True
+  dithering_sampling: True
+  resample_sdf_at: 10
+
+constraint_weights:
+  grad_constraint: 50.0
+  normal_constraint: 100.0
+  sdf_constraint: 3000.0
+
+sampling:
+  type: uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]

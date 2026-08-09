@@ -1,0 +1,25 @@
+network:
+  hidden_layers: [256, 256]
+  omega_0: 100
+  omega_w: 100
+  in_coords: 3
+  out_coords: 1
+  residual: True
+
+optimizer:
+  lr: 0.001
+  type: adam
+
+training:
+  coarse_model: "results/armadillo_coarse/best.pth"
+  level1: "results/arm_res_on_neigh_medium/best.pth"
+  epochs: 10000
+  batchsize: 172974
+  delta: 0.001
+  neighborhood_delta: True
+  dithering_sampling: False
+
+sampling:
+  type: uniform  # curvature or uniform
+  curvature_fractions: [0.2, 0.6, 0.2]
+  curvature_percentiles: [0.6, 0.95]
