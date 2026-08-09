@@ -43,6 +43,10 @@ struct Experiment {
     // Geometry orientation (previously inferred from checkpoint filename substrings).
     bool swap_y_and_z = false;
     bool invert_z = false;
+
+    // Some checkpoints store the model with y pointing down; flip the camera's
+    // vertical axis so the initial view is upright.
+    bool flip_y = false;
 };
 
 const Experiment thai_statue = {
@@ -202,7 +206,8 @@ const Experiment lucy = {
     0,
 
     true,   // swap_y_and_z
-    false    // invert_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment armadillo = {
@@ -224,7 +229,11 @@ const Experiment armadillo = {
 
     true,
     1,
-    0
+    0,
+
+    false,   // swap_y_and_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment armadillo_64 = {
@@ -246,7 +255,11 @@ const Experiment armadillo_64 = {
 
     true,
     1,
-    0
+    0,
+
+    false,   // swap_y_and_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment armadillo_siren = {
@@ -268,7 +281,11 @@ const Experiment armadillo_siren = {
 
     true,
     1,
-    0
+    0,
+
+    false,   // swap_y_and_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment buddha_neigh_residual_64x1_128x1_256x1 = {
@@ -290,7 +307,11 @@ const Experiment buddha_neigh_residual_64x1_128x1_256x1 = {
 
     true,
     1,
-    0
+    0,
+
+    false,   // swap_y_and_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment buddha_armadillo_256x3 = {
@@ -626,7 +647,7 @@ public:
     virtual void InitRays() = 0;
     virtual void InitSdf(const Experiment& experiment) = 0;
     virtual void SdfInference(int lod_0_sphere_tracing_iters, int lod_1_sphere_tracing_iters, int lod_2_sphere_tracing_iters, float lod_0_delta,
-        float lod_1_delta, float time, float cam_time, float distance_threshold, uint* out_img_data, int lod_to_show, bool skip_lod_0, bool is_residual, Shading shading, bool swap_y_and_z, bool invert_z, float* h_inv_view_matrix, float* h_inv_proj_matrix) = 0;
+        float lod_1_delta, float time, float cam_time, float distance_threshold, uint* out_img_data, int lod_to_show, bool skip_lod_0, bool is_residual, Shading shading, bool swap_y_and_z, bool invert_z, bool flip_y, float* h_inv_view_matrix, float* h_inv_proj_matrix) = 0;
     virtual void SdfInference() = 0;
     virtual void ImageFromInferenceGpu(float distance_threshold) = 0;
     virtual void ImageFromInference() = 0;
@@ -723,7 +744,7 @@ public:
     }
 
     void SdfInference(int lod_0_sphere_tracing_iters, int lod_1_sphere_tracing_iters, int lod_2_sphere_tracing_iters, float lod_0_delta, float lod_1_delta, float time, float cam_time, float distance_threshold,
-        uint* out_img_data, int lod_to_show, bool skip_lod_0, bool is_residual, Shading shading, bool swap_y_and_z, bool invert_z, float* h_inv_view_matrix, float* h_inv_proj_matrix) override {
+        uint* out_img_data, int lod_to_show, bool skip_lod_0, bool is_residual, Shading shading, bool swap_y_and_z, bool invert_z, bool flip_y, float* h_inv_view_matrix, float* h_inv_proj_matrix) override {
 
         // DEBUG
         /*{
@@ -756,7 +777,7 @@ public:
 
         graph.capture_and_execute(stream, false, [&]() {
 
-            InitializeRays_kernel << <grid, block, sbytes, stream >> > (precision_t(time), precision_t(cam_time), origins, directions, resolution, LayerGemms::point_size, swap_y_and_z, invert_z, inv_view_matrix, inv_proj_matrix);
+            InitializeRays_kernel << <grid, block, sbytes, stream >> > (precision_t(time), precision_t(cam_time), origins, directions, resolution, LayerGemms::point_size, swap_y_and_z, invert_z, flip_y, inv_view_matrix, inv_proj_matrix);
 
             if (!skip_lod_0) {
 
@@ -1158,16 +1179,17 @@ void SdfInference(int lod_0_sphere_tracing_iters, int lod_1_sphere_tracing_iters
 
     bool swap_y_and_z = experiment.swap_y_and_z;
     bool invert_z = experiment.invert_z;
+    bool flip_y = experiment.flip_y;
 
     if (experiment.is3D) {
 
         mip_plicit_3d->SdfInference(lod_0_sphere_tracing_iters, lod_1_sphere_tracing_iters, lod_2_sphere_tracing_iters, lod_0_delta, lod_1_delta, time, cam_time, distance_threshold, out_img_data, lod_to_show, skip_lod_0, is_residual, shading,
-            swap_y_and_z, invert_z, h_inv_view_matrix, h_inv_proj_matrix);
+            swap_y_and_z, invert_z, flip_y, h_inv_view_matrix, h_inv_proj_matrix);
     }
     else {
 
         mip_plicit_4d->SdfInference(lod_0_sphere_tracing_iters, lod_1_sphere_tracing_iters, lod_2_sphere_tracing_iters, lod_0_delta, lod_1_delta, time, cam_time, distance_threshold, out_img_data, lod_to_show, skip_lod_0, is_residual, shading,
-            swap_y_and_z, invert_z, h_inv_view_matrix, h_inv_proj_matrix);
+            swap_y_and_z, invert_z, flip_y, h_inv_view_matrix, h_inv_proj_matrix);
     }
 }
 

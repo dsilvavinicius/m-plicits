@@ -45,7 +45,11 @@ MIP-plicitsRenderer.exe -experiment=lucy -benchmark=500
   the first SDF and 5 per subsequent level, at 512².
 
 Each experiment (architecture per LoD + checkpoint paths + orientation) is
-declared in `state.cu`'s registry; add new shapes there.
+declared in `state.cu`'s registry; add new shapes there. The camera starts
+3.5 units back so the whole normalized object is visible; rays are clipped
+to the scene's bounding sphere before tracing (SIREN SDFs are only reliable
+near the [-1,1]³ training domain). If a checkpoint's native axes render the
+model upside-down, set `flip_y = true` in its experiment declaration.
 
 ## Checkpoint format
 

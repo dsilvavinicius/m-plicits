@@ -122,7 +122,11 @@ private:
     glm::quat quatRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     glm::quat prevQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
-    glm::vec3 translation_vector = glm::zero<glm::vec3>();
+    // Start outside the scene: models are normalized to the unit sphere
+    // inside [-1,1]^3, so back the camera off along +z far enough that the
+    // whole object is visible at the default 45-degree FOV (zero would place
+    // the eye at the world origin, i.e. inside the object).
+    glm::vec3 translation_vector = glm::vec3(0.0f, 0.0f, -3.5f);
     float scale = 1.0f;
 
     glm::mat4 view_matrix = glm::identity<glm::mat4>();

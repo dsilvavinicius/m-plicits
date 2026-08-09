@@ -571,7 +571,10 @@ display()
             if (--g_bench_warmup == 0)
                 g_bench_t0 = std::chrono::high_resolution_clock::now();
         }
-        else if (++g_bench_counted >= g_benchmark_frames) {
+        else if (++g_bench_counted == g_benchmark_frames) {
+            save_snapshot = true;   // final frame is dumped as img<N>.ppm next display()
+        }
+        else if (g_bench_counted > g_benchmark_frames) {
             const double secs = std::chrono::duration<double>(
                 std::chrono::high_resolution_clock::now() - g_bench_t0).count();
             const double bench_fps = g_bench_counted / secs;

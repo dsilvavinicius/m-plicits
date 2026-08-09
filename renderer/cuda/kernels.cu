@@ -397,7 +397,7 @@ __global__ void IterateSphereTracing_kernel(precision_t* origins, precision_t* d
     }
 }
 
-__global__ void InitializeRays_kernel(precision_t time, precision_t cam_time, precision_t* origins_time, precision_t* directions, uint2 resolution, int point_size, bool swap_y_and_z, bool invert_z, float* inv_view_matrix, float* inv_proj_matrix) {
+__global__ void InitializeRays_kernel(precision_t time, precision_t cam_time, precision_t* origins_time, precision_t* directions, uint2 resolution, int point_size, bool swap_y_and_z, bool invert_z, bool flip_y, float* inv_view_matrix, float* inv_proj_matrix) {
     precision_t i(threadIdx.x + blockIdx.x * blockDim.x);
     precision_t j(threadIdx.y + blockIdx.y * blockDim.y);
 
@@ -409,6 +409,7 @@ __global__ void InitializeRays_kernel(precision_t time, precision_t cam_time, pr
         // Compute normalized device coordinates (NDC)
         precision_t ndc_x = (precision_t(2.0f) * i) / precision_t(resolution.x) - precision_t(1.0f);
         precision_t ndc_y = (precision_t(2.0f) * j) / precision_t(resolution.y) - precision_t(1.0f);
+        if (flip_y) ndc_y = -ndc_y;   // per-experiment upright correction (Experiment::flip_y)
         precision_t ndc_z = precision_t(-1.0f); // Assuming a near plane at z = -1.0
 
         // Apply the inverse projection matrix
@@ -449,6 +450,31 @@ __global__ void InitializeRays_kernel(precision_t time, precision_t cam_time, pr
         directions[idx_directions] = ray_direction[0] / ray_dir_length;
         directions[idx_directions + 1] = ray_direction[1] / ray_dir_length;
         directions[idx_directions + 2] = ray_direction[2] / ray_dir_length;
+
+        // Advance the origin to the scene's bounding sphere: models are
+        // normalized to the unit sphere, and the SDF networks are only
+        // reliable near [-1,1]^3. With the camera starting outside the
+        // domain, sphere tracing from the eye would step through regions
+        // where the SIREN extrapolates; entering at the bounding sphere
+        // restores the original assumption that rays begin near the domain.
+        {
+            const precision_t R(1.2f);
+            precision_t b = ray_origin[0] * directions[idx_directions]
+                          + ray_origin[1] * directions[idx_directions + 1]
+                          + ray_origin[2] * directions[idx_directions + 2];
+            precision_t c = ray_origin[0] * ray_origin[0]
+                          + ray_origin[1] * ray_origin[1]
+                          + ray_origin[2] * ray_origin[2] - R * R;
+            if (c > precision_t(0.0f) && b < precision_t(0.0f)) {
+                precision_t disc = b * b - c;
+                if (disc > precision_t(0.0f)) {
+                    precision_t t_enter = -b - sqrt(disc);
+                    ray_origin[0] = ray_origin[0] + t_enter * directions[idx_directions];
+                    ray_origin[1] = ray_origin[1] + t_enter * directions[idx_directions + 1];
+                    ray_origin[2] = ray_origin[2] + t_enter * directions[idx_directions + 2];
+                }
+            }
+        }
 
         // Set the ray origin in the output array
         origins_time[idx_origins] = ray_origin[0];
