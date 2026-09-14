@@ -567,6 +567,10 @@ display()
 
     if (g_benchmark_frames > 0)
     {
+        // The interactive loop redraws on a REFRESH_DELAY (10 ms) timer, which
+        // caps it near 100 FPS. Benchmarks must be GPU-bound, so schedule the
+        // next frame immediately.
+        glutPostRedisplay();
         if (g_bench_warmup > 0) {
             if (--g_bench_warmup == 0)
                 g_bench_t0 = std::chrono::high_resolution_clock::now();
@@ -578,12 +582,14 @@ display()
             const double secs = std::chrono::duration<double>(
                 std::chrono::high_resolution_clock::now() - g_bench_t0).count();
             const double bench_fps = g_bench_counted / secs;
-            printf("BENCHMARK resolution=%dx%d frames=%d avg_fps=%.1f\n",
-                   window_width, window_height, g_bench_counted, bench_fps);
+            printf("BENCHMARK resolution=%dx%d iters=%d/%d/%d delta=%.4f normal_lod=%d frames=%d avg_fps=%.1f\n",
+                   window_width, window_height, lod_0_sphere_tracing_iters, lod_1_sphere_tracing_iters,
+                   lod_2_sphere_tracing_iters, lod_0_delta, lod_to_show, g_bench_counted, bench_fps);
             FILE* bench_file = fopen("benchmark.csv", "a");
             if (bench_file) {
-                fprintf(bench_file, "%dx%d,%d,%.2f\n",
-                        window_width, window_height, g_bench_counted, bench_fps);
+                fprintf(bench_file, "%dx%d,%d/%d/%d,%.4f,%d,%d,%.2f\n",
+                        window_width, window_height, lod_0_sphere_tracing_iters, lod_1_sphere_tracing_iters,
+                        lod_2_sphere_tracing_iters, lod_0_delta, lod_to_show, g_bench_counted, bench_fps);
                 fclose(bench_file);
             }
             Cleanup(EXIT_SUCCESS);
@@ -749,6 +755,39 @@ main(int argc, char** argv)
         g_benchmark_frames = getCmdLineArgumentInt(argc, (const char**)argv, "benchmark");
         if (g_benchmark_frames <= 0) g_benchmark_frames = 500;
     }
+
+    // Sphere-tracing configuration. Defaults render the coarse level only
+    // (20 iterations). The paper's full-detail setting is -iters=20,5,5 with
+    // -delta set to the coarse band width; neural normal mapping is
+    // -iters=20,5,0 -normal_lod=2 (trace coarse+medium, shade with the fine
+    // level's normals). The same values are exposed as ImGui sliders.
+    char* cfg = NULL;
+    if (getCmdLineArgumentString(argc, (const char**)argv, "iters", &cfg)) {
+        int a = lod_0_sphere_tracing_iters, b = lod_1_sphere_tracing_iters, c = lod_2_sphere_tracing_iters;
+        if (sscanf(cfg, "%d,%d,%d", &a, &b, &c) >= 1) {
+            lod_0_sphere_tracing_iters = a;
+            lod_1_sphere_tracing_iters = b;
+            lod_2_sphere_tracing_iters = c;
+        }
+    }
+    if (getCmdLineArgumentString(argc, (const char**)argv, "delta", &cfg)) {
+        float d0 = lod_0_delta, d1 = lod_1_delta;
+        if (sscanf(cfg, "%f,%f", &d0, &d1) >= 1) {
+            lod_0_delta = d0;
+            lod_1_delta = d1;
+        }
+    }
+    if (checkCmdLineFlag(argc, (const char**)argv, "normal_lod"))
+        lod_to_show = getCmdLineArgumentInt(argc, (const char**)argv, "normal_lod");
+    if (checkCmdLineFlag(argc, (const char**)argv, "threshold"))
+        distance_threshold = getCmdLineArgumentFloat(argc, (const char**)argv, "threshold");
+    if (getCmdLineArgumentString(argc, (const char**)argv, "shading", &cfg))
+        shading = (std::string(cfg) == "normals") ? NORMALS : PHONG;
+    if (checkCmdLineFlag(argc, (const char**)argv, "skip_lod0")) skip_lod_0 = true;
+    if (checkCmdLineFlag(argc, (const char**)argv, "no_residual")) is_residual = false;
+    printf("sphere tracing: iters=%d/%d/%d delta=%.4f/%.4f normal_lod=%d residual=%d\n",
+           lod_0_sphere_tracing_iters, lod_1_sphere_tracing_iters, lod_2_sphere_tracing_iters,
+           lod_0_delta, lod_1_delta, lod_to_show, (int)is_residual);
 
     // use command-line specified CUDA device, otherwise use device with highest Gflops/s
     if (checkCmdLineFlag(argc, (const char**)argv, "device"))

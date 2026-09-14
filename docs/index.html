@@ -6,138 +6,248 @@
 <title>M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals</title>
 <meta name="description" content="A noise-robust neural surface representation and the real-time algorithms it unlocks. NeurIPS 2026.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<!-- TODO on release: replace og:url / links marked TODO -->
+<!-- TODO on release: og:url + the links marked TODO -->
 <meta property="og:title" content="M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals">
-<meta property="og:description" content="Noise-robust neural surfaces, in real time. NeurIPS 2026.">
+<meta property="og:description" content="Surfaces that stay clean when the data is not. NeurIPS 2026.">
 <meta property="og:image" content="assets/og.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals">
-<meta name="twitter:description" content="Noise-robust neural surfaces, in real time. NeurIPS 2026.">
+<meta name="twitter:description" content="Surfaces that stay clean when the data is not. NeurIPS 2026.">
 <meta name="twitter:image" content="assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
+:root{
+  --navy:#0b1020;--navy2:#121a33;--ink:#15171c;--muted:#5b6170;--line:#e6e3dc;
+  --paper:#faf9f6;--paper2:#f1efe9;--amber:#f59e0b;--amber-ink:#b45309;
+  --bad:#dc2626;--good:#059669;--sans:'Inter',system-ui,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:#fafbfd;color:#111827;line-height:1.6}
-nav{position:sticky;top:0;background:rgba(250,251,253,.92);backdrop-filter:blur(8px);border-bottom:1px solid #e5e7eb;z-index:9}
-nav .in{max-width:1020px;margin:0 auto;padding:13px 24px;display:flex;justify-content:space-between;align-items:center}
-nav .logo{font-weight:800;color:#4f46e5}
-nav .links a{color:#4b5563;text-decoration:none;margin-left:20px;font-size:14px}
-nav .links a:hover{color:#4f46e5}
-.wrap{max-width:1020px;margin:0 auto;padding:0 24px}
-header{text-align:center;padding:56px 0 8px}
-.venue{display:inline-block;padding:5px 14px;border-radius:999px;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:12.5px;letter-spacing:.1em}
-.display{font-size:52px;font-weight:800;letter-spacing:-.025em;line-height:1.06;margin:20px auto 14px;max-width:880px}
-.display em{font-style:normal;box-shadow:inset 0 -16px 0 #c7d2fe}
-.ptitle{font-size:19px;font-weight:700;color:#111827;max-width:860px;margin:0 auto}
-.sub{color:#4b5563;font-size:16.5px;max-width:780px;margin:10px auto 0}
-.authors{color:#6b7280;font-size:14.5px;margin-top:12px}
-.btns{margin:24px 0 6px}
-.btn{display:inline-block;margin:4px;padding:10px 20px;border-radius:10px;background:#111827;color:#fff;text-decoration:none;font-size:14px}
-.btn:hover{background:#4f46e5}
-.cmp{position:relative;max-width:760px;margin:36px auto 6px;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(17,24,39,.16);user-select:none;background:#fff}
-.cmp>img{display:block;width:100%;pointer-events:none}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ---------- hero ---------- */
+.hero{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(900px 420px at 78% 42%,rgba(245,158,11,.16),transparent 65%),
+  radial-gradient(700px 400px at 12% 10%,rgba(99,102,241,.22),transparent 60%);pointer-events:none}
+nav{position:relative;z-index:2}
+nav .in{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+nav .logo{font-weight:800;letter-spacing:-.01em}
+nav .links a{color:#c7cbd6;text-decoration:none;margin-left:22px;font-size:14px;font-weight:500}
+nav .links a:hover{color:var(--amber)}
+.hgrid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center;padding:44px 0 40px}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--amber)}
+.kicker::before{content:"";width:26px;height:2px;background:var(--amber)}
+.display{font-family:var(--serif);font-weight:400;font-size:64px;line-height:1.0;letter-spacing:-.015em;margin:18px 0 20px}
+.display i{font-style:italic;color:var(--amber)}
+.ptitle{font-size:18px;font-weight:600;color:#fff;max-width:520px}
+.lede{color:#b7bccb;font-size:16.5px;max-width:520px;margin-top:10px}
+.authors{color:#8b91a3;font-size:14px;margin-top:14px}
+.btns{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:1.5px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;font-size:14px;font-weight:600}
+.btn:hover{border-color:var(--amber);color:var(--amber)}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1200}
+.btn.primary:hover{background:#fbbf24;color:#1a1200}
+
+.cmpcard{background:#fff;border-radius:18px;padding:12px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.cmp{position:relative;border-radius:10px;overflow:hidden;user-select:none;background:#fff;aspect-ratio:4/3}
+.cmp>img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .cmp .top{position:absolute;inset:0;overflow:hidden}
 .cmp .top img{width:100%;height:100%;object-fit:cover}
-.cmp .bar{position:absolute;top:0;bottom:0;width:3px;background:#4f46e5;transform:translateX(-1.5px)}
-.cmp .knob{position:absolute;top:50%;width:44px;height:44px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transform:translate(-22px,-22px);box-shadow:0 6px 18px rgba(79,70,229,.5)}
-.cmp .tag{position:absolute;top:14px;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.06em;color:#fff}
-.tag.l{left:14px;background:#dc2626}.tag.r{right:14px;background:#059669}
-.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize}
-.cmpcap{color:#6b7280;font-size:13.5px;text-align:center;margin:12px 0 4px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:840px;margin:30px auto}
-.stat{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 6px;text-align:center}
-.stat .n{font-size:24px;font-weight:800;color:#4f46e5}
-.stat .l{font-size:12px;color:#6b7280}
-h2{font-size:27px;font-weight:800;margin:60px 0 10px;letter-spacing:-.01em}
-h2 span{color:#4f46e5}
-p.body{color:#374151;font-size:16px;max-width:840px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:20px 0}
-.card img,.card video{width:100%;border-radius:8px;display:block}
-.cap{font-size:13px;color:#6b7280;margin-top:10px;text-align:center}
-.res{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
-.rcard{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;text-decoration:none;color:#111827;display:block}
-.rcard:hover{border-color:#4f46e5}
-.rcard .t{font-weight:800;margin-bottom:6px}
-.rcard .d{font-size:13.5px;color:#6b7280}
-pre{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;font-size:13px;overflow-x:auto;line-height:1.5}
-footer{margin:70px 0 40px;text-align:center;color:#9ca3af;font-size:13px}
-@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.display{font-size:34px}.res{grid-template-columns:1fr}}
+.cmp .bar{position:absolute;top:0;bottom:0;width:3px;background:var(--navy);transform:translateX(-1.5px)}
+.cmp .knob{position:absolute;top:50%;width:46px;height:46px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transform:translate(-23px,-23px);box-shadow:0 8px 22px rgba(0,0,0,.35);border:2px solid #fff}
+.cmp .tag{position:absolute;top:12px;padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.06em;color:#fff}
+.tag.l{left:12px;background:var(--bad)}.tag.r{right:12px;background:var(--good)}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmpfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 4px 2px;color:var(--muted);font-size:13px}
+.cmpfoot b{color:var(--ink)}
+.tabs{display:inline-flex;background:var(--paper2);border-radius:999px;padding:3px}
+.tabs button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:999px;cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff}
+
+.stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.12);padding:22px 0 30px}
+.stat{padding:6px 18px 6px 0;border-right:1px solid rgba(255,255,255,.12);margin-right:18px}
+.stat:last-child{border:0}
+.stat .n{font-family:var(--serif);font-size:38px;line-height:1;color:#fff}
+.stat .l{font-size:12.5px;color:#9aa0b3;margin-top:6px}
+
+/* ---------- sections ---------- */
+section{padding:72px 0 8px}
+.sec-k{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--amber-ink)}
+h2{font-family:var(--serif);font-weight:400;font-size:42px;line-height:1.08;letter-spacing:-.01em;margin:10px 0 12px}
+p.body{color:#3b404c;font-size:16.5px;max-width:720px}
+.how{display:grid;grid-template-columns:400px 1fr;gap:48px;align-items:start;margin-top:30px}
+.how img{width:100%;border-radius:12px;border:1px solid var(--line);background:#fff}
+.steps{display:grid;gap:18px}
+.step{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start}
+.step .num{font-family:var(--serif);font-size:34px;line-height:1;color:var(--amber-ink)}
+.step h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.step p{color:#3b404c;font-size:15px}
+.note{margin-top:8px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:10px;font-size:14.5px;color:#3b404c}
+
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px;margin-top:22px}
+.seg button{border:0;background:transparent;font:inherit;font-size:14px;font-weight:600;padding:9px 18px;border-radius:999px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+.seg button .dot{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.7}
+.seg button.on{background:var(--navy);color:#fff}
+.seg button[data-mode="ingp"].on{background:var(--bad)}
+.seg button[data-mode="ours"].on{background:var(--good)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.g{position:relative;aspect-ratio:1/1;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.g img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease}
+.g img.show{opacity:1}
+.g .lab{position:absolute;left:10px;bottom:10px;background:rgba(21,23,28,.82);color:#fff;font-size:12px;font-weight:600;padding:4px 9px;border-radius:7px;z-index:1}
+.gcap{color:var(--muted);font-size:13.5px;margin-top:12px}
+
+.videocard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:26px}
+.videocard video{width:100%;display:block;border-radius:10px;background:#000}
+.cap{font-size:13.5px;color:var(--muted);margin-top:10px;text-align:center}
+
+.rt{background:var(--paper2);margin-top:72px;padding:64px 0 72px}
+.rtgrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-top:26px}
+.rt .tile{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rt .tile img{width:100%;display:block;aspect-ratio:420/440;object-fit:cover}
+.rt .tile .t{padding:9px 12px;font-size:13px;color:var(--muted)}
+
+/* ---------- footer band ---------- */
+.foot{background:var(--navy);color:#fff;padding:64px 0 36px;margin-top:8px}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.rcard{display:block;background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px;text-decoration:none;color:#fff}
+.rcard:hover{border-color:var(--amber)}
+.rcard .t{font-weight:700;margin-bottom:6px}
+.rcard .d{font-size:13.5px;color:#a7adbe}
+.foot h2{color:#fff;font-size:34px;margin-top:56px}
+pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px;font-size:13px;line-height:1.55;overflow-x:auto;color:#e6e8ef;margin-top:14px}
+.venue{display:flex;align-items:center;gap:16px;margin-top:44px;padding-top:26px;border-top:1px solid rgba(255,255,255,.12);color:#8b91a3;font-size:13px;flex-wrap:wrap}
+.venue img{height:34px;background:#fff;padding:5px 8px;border-radius:6px}
+
+@media(max-width:920px){
+  .hgrid{grid-template-columns:1fr;gap:34px}.display{font-size:46px}
+  .stats{grid-template-columns:1fr 1fr}.stat{border:0;margin:0}
+  .how{grid-template-columns:1fr}.how img{max-width:420px}
+  .grid{grid-template-columns:repeat(2,1fr)}.rtgrid{grid-template-columns:1fr 1fr}.res{grid-template-columns:1fr}
+  nav .links a{margin-left:14px}
+}
+@media(max-width:520px){.display{font-size:38px}.grid{grid-template-columns:1fr 1fr}h2{font-size:32px}nav .links{display:none}}
 </style>
 </head>
 <body>
-<nav><div class="in"><div class="logo">M&#8209;plicits</div><div class="links">
-<a href="#method">Method</a><a href="#results">Results</a><a href="#video">Video</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
 
+<div class="hero">
 <div class="wrap">
-<header>
-<div class="venue">NEURIPS 2026 &middot; PROJECT PAGE</div>
-<h1 class="display">Surfaces that stay <em>clean</em><br>when the data is not.</h1>
+<nav><div class="in"><div class="logo">M&#8209;plicits</div><div class="links">
+<a href="#how">How it works</a><a href="#results">Results</a><a href="#video">Video</a><a href="#realtime">Real time</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
+
+<div class="hgrid">
+<div>
+<div class="kicker">NeurIPS 2026</div>
+<h1 class="display">Surfaces that stay <i>clean</i> when the data is not.</h1>
 <div class="ptitle">M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals</div>
-<div class="sub">A noise-robust neural surface representation &mdash; and the real-time algorithms it unlocks.</div>
+<div class="lede">A neural surface representation whose training bands never see the noise, and the real-time algorithms that fall out of it.</div>
 <div class="authors">Authors revealed on acceptance</div>
 <div class="btns">
-<!-- TODO on release: point Paper/arXiv/Code/Data at their real URLs -->
-<a class="btn" href="#">&#128196; Paper</a>
-<a class="btn" href="#">&#128220; arXiv</a>
-<a class="btn" href="#">&#128187; Code</a>
-<a class="btn" href="#">&#128230; Data</a>
-<a class="btn" href="#video">&#127916; Video</a>
+<!-- TODO on release: real URLs -->
+<a class="btn primary" href="#">&#128196; Paper</a>
+<a class="btn" href="#">arXiv</a>
+<a class="btn" href="#">Code</a>
+<a class="btn" href="#">Data &amp; models</a>
+<a class="btn" href="#video">&#9654;&nbsp;Video</a>
 </div>
-</header>
+</div>
 
+<div class="cmpcard">
 <div class="cmp" id="cmp">
-<img src="assets/slider_ours.jpg" alt="M-plicits reconstruction from a noisy scan: clean cherub surface">
-<div class="top" id="cmpTop"><img src="assets/slider_ingp.jpg" alt="iNGP reconstruction from the same noisy scan: noise absorbed into the surface"></div>
+<img id="cmpOurs" src="assets/slider_cherub_ours.jpg" alt="M-plicits reconstruction from a scan with 1% noise: clean surface">
+<div class="top" id="cmpTop"><img id="cmpIngp" src="assets/slider_cherub_ingp.jpg" alt="iNGP reconstruction from the same noisy scan: noise absorbed into the surface"></div>
 <div class="bar" id="cmpBar"></div><div class="knob" id="cmpKnob">&#8596;</div>
 <div class="tag l">iNGP &mdash; ABSORBS NOISE</div><div class="tag r">M&#8209;PLICITS &mdash; FILTERS IT</div>
 <input type="range" min="0" max="100" value="50" id="cmpRange" aria-label="Comparison slider: iNGP versus M-plicits on the same noisy input">
 </div>
-<div class="cmpcap"><b>Drag.</b> Both methods trained on the same scan with 1% noise.</div>
-
-<div class="stats">
-<div class="stat"><div class="n">35&ndash;180</div><div class="l">FPS real-time sphere tracing</div></div>
-<div class="stat"><div class="n">247K</div><div class="l">parameters for full detail</div></div>
-<div class="stat"><div class="n">1%</div><div class="l">input noise, filtered structurally</div></div>
-<div class="stat"><div class="n">5&times;</div><div class="l">faster mesh extraction</div></div>
+<div class="cmpfoot"><div><b>Drag.</b> Same scan, 1% noise, both methods.</div>
+<div class="tabs" id="tabs"><button class="on" data-shape="cherub">Cherub</button><button data-shape="armadillo">Armadillo</button><button data-shape="lucy">Lucy</button></div></div>
+</div>
 </div>
 
-<h2 id="method"><span>&#9632;</span> The representation</h2>
-<p class="body">M-plicits models a shape as a base network plus residuals trained only inside nested
-neighborhoods of the surface. The band-limited coarse level cannot fit high-frequency noise, and the
-residuals are never supervised where noise lives &mdash; robustness is structural, not a loss term.
-Every partial sum is itself a signed distance function, so coarser prefixes are levels of detail for free.</p>
-<div class="card"><img src="assets/teaser.jpg" alt="M-plicits overview: residual multiscale INR, noise robustness, attribute mapping">
-<div class="cap">Overview: residual multiscale representation &middot; noise robustness &middot; attribute mapping.</div></div>
-<div class="card"><img src="assets/pipeline.jpg" alt="Training pipeline with nested neighborhoods">
-<div class="cap">Nested neighborhoods concentrate supervision near the surface &mdash; and license the fast inference below.</div></div>
-<p class="body">The nesting is an invariant the renderer can rely on: multiscale sphere tracing cannot
-miss the surface, marching cubes culled by the coarse band extract up to 5&times; faster, and GEMM-based
-analytical normals need no autograd &mdash; real-time rendering and attribute mapping from one compact model.
-Details are in the paper.</p>
+<div class="stats">
+<div class="stat"><div class="n">35&ndash;180</div><div class="l">FPS, real-time sphere tracing</div></div>
+<div class="stat"><div class="n">247K</div><div class="l">parameters for full detail</div></div>
+<div class="stat"><div class="n">1%</div><div class="l">input noise, filtered by construction</div></div>
+<div class="stat"><div class="n">5&times;</div><div class="l">faster mesh extraction</div></div>
+</div>
+</div>
+</div>
 
-<h2 id="results"><span>&#9632;</span> Results</h2>
-<div class="card"><img src="assets/noise.jpg" alt="Noise comparison: iNGP and BACON absorb noise, IDF fragments, M-plicits recovers the surface">
-<div class="cap">Under 1% noise: iNGP and BACON absorb it, IDF fragments &mdash; M-plicits recovers the cherubs.</div></div>
-<div class="card"><img src="assets/fines.jpg" alt="Fine-level qualitative comparison against iNGP, BACON, IDF">
-<div class="cap">Fine-level quality against iNGP, BACON and IDF.</div></div>
+<section id="how"><div class="wrap">
+<div class="sec-k">How it works</div>
+<h2>Residuals that only ever see the surface.</h2>
+<p class="body">The representation is a sum of small networks. Each one after the first is trained inside a thin, shrinking band around the previous surface, so the noise living off-surface is never fitted.</p>
+<div class="how">
+<img src="assets/method_block.jpg" alt="Residual multiscale representation: base plus residual equals sum; sampling only near the surface">
+<div class="steps">
+<div class="step"><div class="num">1</div><div><h3>A compact base network captures the coarse shape</h3><p>Band-limited by design, it cannot fit high-frequency noise in the first place.</p></div></div>
+<div class="step"><div class="num">2</div><div><h3>Residual networks refine it, inside nested bands</h3><p>Each residual is supervised only where the previous surface already is. Off-surface noise is outside the band, so it is simply never seen.</p></div></div>
+<div class="step"><div class="num">3</div><div><h3>Every partial sum is a valid signed distance function</h3><p>Coarser prefixes are levels of detail for free, and the nesting is an invariant the renderer can rely on.</p></div></div>
+<div class="note">Sampling only near the surface is also what makes it fast: culled marching cubes extract up to 5&times; faster and multiscale sphere tracing runs in real time. The details are in the paper.</div>
+</div>
+</div>
+</div></section>
 
-<h2 id="video"><span>&#9632;</span> Video</h2>
-<div class="card">
+<section id="results"><div class="wrap">
+<div class="sec-k">Results</div>
+<h2>Eight shapes, one noisy scan each. Switch the method.</h2>
+<p class="body">Every reconstruction below was trained on a scan with 1% noise. Flip between what the methods were given and what they produced.</p>
+<div class="seg" id="seg">
+<button data-mode="input"><span class="dot"></span>Noisy input</button>
+<button data-mode="ingp"><span class="dot"></span>iNGP</button>
+<button data-mode="ours" class="on"><span class="dot"></span>M-plicits</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="gcap">Rendered from the paper's reconstructions with identical cameras. Comparisons against BACON, IDF and screened Poisson are in the paper.</div>
+</div></section>
+
+<section id="video"><div class="wrap">
+<div class="sec-k">Video</div>
+<h2>The same scans, in motion.</h2>
+<div class="videocard">
 <video controls preload="metadata" poster="assets/poster.jpg">
 <source src="assets/results.mp4" type="video/mp4">
 Your browser does not support the video tag &mdash; <a href="assets/results.mp4">download the video</a>.
 </video>
-<div class="cap">Turntable comparisons &mdash; every method trained on the same scan with 1% noise.</div>
+<div class="cap">Turntables of the noisy input, iNGP and M-plicits, with a synchronized magnifier.</div>
 </div>
+</div></section>
 
-<h2 id="resources"><span>&#9632;</span> Resources</h2>
+<div class="rt" id="realtime"><div class="wrap">
+<div class="sec-k">Real time</div>
+<h2>Rendered live, not extracted.</h2>
+<p class="body">The nesting guarantees the renderer cannot miss the surface: multiscale sphere tracing, analytical normals via GEMMs, and normal and texture mapping run from the compact model directly. These are frames from the CUDA renderer, not extracted meshes.</p>
+<div class="seg" id="rtseg">
+<button data-mode="coarse"><span class="dot"></span>Coarse level only</button>
+<button data-mode="full" class="on"><span class="dot"></span>Full detail</button>
+<button data-mode="nm"><span class="dot"></span>Neural normal mapping</button>
+</div>
+<div class="rtgrid" id="rtgrid">
+<div class="tile"><div class="g" style="border:0;border-radius:0"><img src="assets/rt_armadillo_coarse.jpg" data-mode="coarse" alt="Armadillo, coarse level"><img src="assets/rt_armadillo_full.jpg" data-mode="full" class="show" alt="Armadillo, full detail"><img src="assets/rt_armadillo_nm.jpg" data-mode="nm" alt="Armadillo, neural normal mapping"></div><div class="t">Armadillo</div></div>
+<div class="tile"><div class="g" style="border:0;border-radius:0"><img src="assets/rt_lucy_coarse.jpg" data-mode="coarse" alt="Lucy, coarse level"><img src="assets/rt_lucy_full.jpg" data-mode="full" class="show" alt="Lucy, full detail"><img src="assets/rt_lucy_nm.jpg" data-mode="nm" alt="Lucy, neural normal mapping"></div><div class="t">Lucy</div></div>
+<div class="tile"><div class="g" style="border:0;border-radius:0"><img src="assets/rt_buddha_coarse.jpg" data-mode="coarse" alt="Buddha, coarse level"><img src="assets/rt_buddha_full.jpg" data-mode="full" class="show" alt="Buddha, full detail"><img src="assets/rt_buddha_nm.jpg" data-mode="nm" alt="Buddha, neural normal mapping"></div><div class="t">Buddha</div></div>
+<div class="tile"><img src="assets/rt_vase.jpg" alt="Textured vase, neural texture mapping"><div class="t">Vase &middot; neural texture mapping</div></div>
+</div>
+<div class="gcap" id="rtcap">Sphere tracing with 20 iterations on the coarse SDF and 5 with each residual level added.</div>
+</div></div>
+
+<div class="foot"><div class="wrap">
+<div class="sec-k" id="resources" style="color:var(--amber)">Resources</div>
 <div class="res">
-<a class="rcard" href="#"><div class="t">&#128187; Code</div><div class="d">Training, evaluation protocol, appendix experiments, the real-time CUDA renderer, and texture mapping &mdash; one repository.</div></a>
-<a class="rcard" href="#"><div class="t">&#128230; Data &amp; models</div><div class="d">All point clouds (clean, noisy, outlier-contaminated) and released checkpoints in a single archive with checksums.</div></a>
-<a class="rcard" href="#"><div class="t">&#128196; Paper</div><div class="d">Method details, evaluation protocol, isolation ablations, and the appendix robustness studies.</div></a>
+<a class="rcard" href="#"><div class="t">&#128187; Code</div><div class="d">Training, the evaluation protocol, appendix experiments, the CUDA renderer and texture mapping, in one repository.</div></a>
+<a class="rcard" href="#"><div class="t">&#128230; Data &amp; models</div><div class="d">All point clouds (clean, noisy, outlier-contaminated) and released checkpoints in one archive, with checksums.</div></a>
+<a class="rcard" href="#"><div class="t">&#128196; Paper</div><div class="d">Method, evaluation protocol, isolation ablations and the robustness studies of the appendix.</div></a>
 </div>
-
-<h2 id="bib"><span>&#9632;</span> BibTeX</h2>
+<h2 id="bib">BibTeX</h2>
 <pre>@inproceedings{mplicits2026,
   title     = {M-plicits: Neural Implicit Surfaces via
                Nested Multiscale Residuals},
@@ -145,15 +255,45 @@ Your browser does not support the video tag &mdash; <a href="assets/results.mp4"
   booktitle = {Advances in Neural Information Processing Systems},
   year      = {2026}
 }</pre>
-
-<footer>M-plicits &middot; NeurIPS 2026 &middot; code, data and released models on acceptance</footer>
-</div>
+<div class="venue"><img src="assets/neurips_logo.png" alt="NeurIPS"><span>Thirty-ninth Conference on Neural Information Processing Systems &middot; code, data and released models on acceptance</span></div>
+</div></div>
 
 <script>
+// hero slider + shape tabs
 const r=document.getElementById('cmpRange'),t=document.getElementById('cmpTop'),
 b=document.getElementById('cmpBar'),k=document.getElementById('cmpKnob');
 function set(v){t.style.clipPath='inset(0 '+(100-v)+'% 0 0)';b.style.left=v+'%';k.style.left=v+'%';}
 r.addEventListener('input',e=>set(+e.target.value));set(50);
+document.querySelectorAll('#tabs button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+  const s=btn.dataset.shape;
+  document.getElementById('cmpOurs').src='assets/slider_'+s+'_ours.jpg';
+  document.getElementById('cmpIngp').src='assets/slider_'+s+'_ingp.jpg';
+}));
+// results gallery
+const SHAPES=[['cherub','Cherub'],['bunny','Bunny'],['armadillo','Armadillo'],['cat','Lucky cat'],
+              ['lucy','Lucy'],['head','Head'],['foodog','Guardian lion'],['bust','Bust']];
+const MODES=['input','ingp','ours'];
+const grid=document.getElementById('grid');
+SHAPES.forEach(([key,label])=>{
+  const g=document.createElement('div');g.className='g';
+  MODES.forEach(m=>{const im=document.createElement('img');im.src='assets/g_'+key+'_'+m+'.jpg';im.dataset.mode=m;
+    im.alt=label+' - '+m;if(m==='ours')im.classList.add('show');g.appendChild(im);});
+  const l=document.createElement('div');l.className='lab';l.textContent=label;g.appendChild(l);grid.appendChild(g);
+});
+document.querySelectorAll('#seg button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#seg button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+  const m=btn.dataset.mode;document.querySelectorAll('#grid img').forEach(im=>im.classList.toggle('show',im.dataset.mode===m));
+}));
+// real-time strip
+const RTCAP={coarse:'Sphere tracing the coarse SDF only: 20 iterations. The LoD-0 row of the paper.',
+  full:'Sphere tracing with 20 iterations on the coarse SDF and 5 with each residual level added.',
+  nm:'Traced up to the medium level (20 + 5 iterations), shaded with the fine level’s analytic normals: detail without the extra tracing.'};
+document.querySelectorAll('#rtseg button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#rtseg button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+  const m=btn.dataset.mode;document.querySelectorAll('#rtgrid img[data-mode]').forEach(im=>im.classList.toggle('show',im.dataset.mode===m));
+  document.getElementById('rtcap').textContent=RTCAP[m];
+}));
 </script>
 </body>
 </html>

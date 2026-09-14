@@ -25,8 +25,8 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 
-# Builds
-build/
+# Builds (any build*/ tree, e.g. build120/ for a native sm_120 build)
+build*/
 dist/
 *.o
 *.obj

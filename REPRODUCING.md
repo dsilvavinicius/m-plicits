@@ -80,15 +80,19 @@ zero-length-normal repair applied to the Thai input.
 
 Build and usage in `renderer/README.md` (Windows + CUDA). The new
 `-benchmark=<N>` mode prints and logs the average FPS, replacing the
-window-title readout used for the paper. To match Tab. 4's protocol: 512²
-resolution (default build), 20 sphere-tracing iterations on the first SDF
-and 5 per subsequent level, LoD and normal-mapping toggles set in the ImGui
-panel per row. Absolute FPS is hardware-dependent (the paper used an RTX
-5090); relative orderings between rows are the reproducible claim.
+window-title readout used for the paper. Tab. 4's protocol is 512²
+resolution (default build) with 20 sphere-tracing iterations on the first
+SDF and 5 per subsequent level; the per-row configuration is passed on the
+command line (the defaults are coarse-only). Absolute FPS is
+hardware-dependent (the paper used an RTX 5090); relative orderings between
+rows are the reproducible claim.
 
 ```bash
 renderer/cuda/build/Release/MIP-plicitsRenderer.exe -list
+# Tab. 4 rows: coarse only / full detail / neural normal mapping
 renderer/cuda/build/Release/MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500
+renderer/cuda/build/Release/MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500 -iters=20,5,5 -delta=0.02 -normal_lod=2
+renderer/cuda/build/Release/MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500 -iters=20,5,0 -delta=0.02 -normal_lod=2
 ```
 
 ## 6. Attribute (texture) mapping — suppl. attribute section

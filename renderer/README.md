@@ -38,11 +38,44 @@ MIP-plicitsRenderer.exe -experiment=lucy -benchmark=500
   ImGui panel can also switch between the main shapes at runtime.
 - `-data_root=<dir>` points at a checkpoint folder other than `./data`.
 - `-benchmark=<N>` renders N frames after a 30-frame warmup, prints
-  `BENCHMARK resolution=... avg_fps=...`, appends to `benchmark.csv`, and
-  exits — this reproduces the Tab. 4 protocol (previously the FPS was read
-  manually from the window title). Sphere-tracing iteration counts and the
-  LoD shown are controlled in the ImGui panel; Tab. 4 uses 20 iterations on
-  the first SDF and 5 per subsequent level, at 512².
+  `BENCHMARK resolution=... iters=... avg_fps=...`, appends the
+  configuration and FPS to `benchmark.csv`, dumps the last frame as
+  `img<N>.ppm`, and exits — this reproduces the Tab. 4 protocol (previously
+  the FPS was read manually from the window title). Benchmark mode redraws
+  continuously; the interactive window refreshes on a 10 ms timer and is
+  therefore capped near 100 FPS whatever the GPU cost.
+
+Sphere-tracing configuration (command line; the same values are ImGui
+sliders in the interactive window). **The defaults trace the coarse level
+only** (20 iterations), which is the LoD-0 row of Tab. 4, not the full
+model:
+
+| Flag | Meaning | Default |
+|---|---|---|
+| `-iters=<c>,<m>,<f>` | sphere-tracing iterations on the coarse SDF, then with the medium and fine residuals added | `20,0,0` |
+| `-delta=<d0>[,<d1>]` | coarse band half-width: rays trace the offset surface `f1 = d0` and switch to the finer levels within `1.4·d0` of it (the paper's δ₁; `0` never hands over to the finer levels) | `0` |
+| `-normal_lod=<0|1|2>` | which level's analytic normals shade the traced point — neural normal mapping when it exceeds the last traced level | `0` |
+| `-threshold=<t>` | hit threshold on the summed distance | `0.05` |
+| `-shading=phong|normals` | Phong shading or normals as colour | `phong` |
+| `-skip_lod0`, `-no_residual` | skip the coarse pass / treat the levels as independent SDFs instead of residuals | off |
+
+The paper's rows, for `armadillo`, `lucy`, `buddha` and `thai_statue`:
+
+```bash
+MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500                                                 # coarse only
+MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500 -iters=20,5,5 -delta=0.02 -normal_lod=2         # full detail
+MIP-plicitsRenderer.exe -experiment=armadillo -benchmark=500 -iters=20,5,0 -delta=0.02 -normal_lod=2         # medium surface, fine normals (NM)
+```
+
+Note that `-normal_lod` matters for the full-detail row too: tracing the
+finer levels refines the silhouette, but most of the visible detail comes
+from shading with the finer level's normals, so `-iters=20,5,5` with the
+default `-normal_lod=0` looks coarse.
+
+`-delta` should be the coarse band width the model was trained with
+(Eq. 5 of the paper; `appendix_experiments/extract_deltas.py` prints it for
+a checkpoint). Too small and the finer levels never engage; too large and
+rays stop short of the surface.
 
 Each experiment (architecture per LoD + checkpoint paths + orientation) is
 declared in `state.cu`'s registry; add new shapes there. The camera starts
