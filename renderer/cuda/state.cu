@@ -68,7 +68,11 @@ const Experiment thai_statue = {
 
     true,
     1,
-    0
+    0,
+
+    false,   // swap_y_and_z
+    false,   // invert_z
+    true     // flip_y
 };
 
 const Experiment asian_dragon = {
@@ -93,7 +97,8 @@ const Experiment asian_dragon = {
     0,
 
     false,   // swap_y_and_z
-    true    // invert_z
+    true,    // invert_z
+    true     // flip_y
 };
 
 const Experiment spot_bob_residual_1x64_tex_2x256 = {
