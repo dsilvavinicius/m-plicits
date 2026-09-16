@@ -15,6 +15,7 @@ Usage:
 import argparse
 import hashlib
 import os
+import re
 import os.path as osp
 import zipfile
 
