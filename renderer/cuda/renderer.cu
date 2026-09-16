@@ -985,8 +985,17 @@ runStdProgram(int argc, char** argv)
 
     // Experiment selection: -experiment=<name> (see -list); default: armadillo.
     const Experiment* selected = &armadillo;
+    char* exp_file = NULL;
     char* exp_name = NULL;
-    if (getCmdLineArgumentString(argc, (const char**)argv, "experiment", &exp_name)) {
+    // -experiment_file=<descriptor>: any released checkpoint set exported by
+    // renderer/scripts/export_experiment.py, without touching the registry.
+    // Checked first: the CUDA helper matches flags by prefix, so
+    // "-experiment_file" would otherwise be read as "-experiment".
+    if (getCmdLineArgumentString(argc, (const char**)argv, "experiment_file", &exp_file)) {
+        selected = LoadExperimentFile(exp_file);
+        if (!selected) exit(EXIT_FAILURE);
+    }
+    else if (getCmdLineArgumentString(argc, (const char**)argv, "experiment", &exp_name)) {
         selected = FindExperiment(exp_name);
         if (!selected) {
             fprintf(stderr, "Unknown experiment '%s'.\n", exp_name);

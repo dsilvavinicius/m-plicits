@@ -644,6 +644,71 @@ void PrintExperiments() {
     printf("Available experiments (-experiment=<name>):\n");
     for (const auto& kv : experiment_registry)
         printf("  %s\n", kv.first.c_str());
+    printf("Any released checkpoint set can also be loaded at runtime with\n"
+           "-experiment_file=<descriptor>, written by renderer/scripts/export_experiment.py.\n");
+}
+
+// Runtime experiment descriptors (-experiment_file=<path>): a "key = value"
+// file produced by renderer/scripts/export_experiment.py for a released
+// checkpoint set. Paths are relative to the data root, like registry entries.
+#include <fstream>
+static Experiment g_file_experiment;
+
+static std::string TrimSpaces(const std::string& s) {
+    const size_t a = s.find_first_not_of(" \t\r\n"), b = s.find_last_not_of(" \t\r\n");
+    return a == std::string::npos ? std::string() : s.substr(a, b - a + 1);
+}
+
+const Experiment* LoadExperimentFile(const std::string& path) {
+    std::ifstream in(path);
+    if (!in) {
+        fprintf(stderr, "cannot open experiment file '%s'\n", path.c_str());
+        return nullptr;
+    }
+    Experiment& e = g_file_experiment;
+    e = Experiment();
+    e.is3D = true;
+    e.surface_W0 = 1;
+    e.textures_W0 = 0;
+    std::string line;
+    while (std::getline(in, line)) {
+        line = TrimSpaces(line);
+        if (line.empty() || line[0] == '#') continue;
+        const size_t eq = line.find('=');
+        if (eq == std::string::npos) continue;
+        const std::string k = TrimSpaces(line.substr(0, eq)), v = TrimSpaces(line.substr(eq + 1));
+        if (k == "lod0_layers") e.n_lod_0_layers = std::stoi(v);
+        else if (k == "lod0_hidden") e.lod_0_hidden_U_size = std::stoi(v);
+        else if (k == "lod0_weights") e.lod_0_weights_file = v;
+        else if (k == "lod0_biases") e.lod_0_biases_file = v;
+        else if (k == "lod1_layers") e.n_lod_1_layers = std::stoi(v);
+        else if (k == "lod1_hidden") e.lod_1_hidden_U_size = std::stoi(v);
+        else if (k == "lod1_weights") e.lod_1_weights_file = v;
+        else if (k == "lod1_biases") e.lod_1_biases_file = v;
+        else if (k == "lod2_layers") e.n_normal_layers = std::stoi(v);
+        else if (k == "lod2_hidden") e.normal_hidden_U_size = std::stoi(v);
+        else if (k == "lod2_weights") e.normal_weights_file = v;
+        else if (k == "lod2_biases") e.normal_biases_file = v;
+        else if (k == "textures_layers") e.n_textures_layers = std::stoi(v);
+        else if (k == "textures_hidden") e.textures_hidden_U_size = std::stoi(v);
+        else if (k == "textures_weights") e.textures_weights_file = v;
+        else if (k == "textures_biases") e.textures_biases_file = v;
+        else if (k == "is3d") e.is3D = std::stoi(v) != 0;
+        else if (k == "surface_w0") e.surface_W0 = std::stoi(v);
+        else if (k == "textures_w0") e.textures_W0 = std::stoi(v);
+        else if (k == "swap_y_and_z") e.swap_y_and_z = std::stoi(v) != 0;
+        else if (k == "invert_z") e.invert_z = std::stoi(v) != 0;
+        else if (k == "flip_y") e.flip_y = std::stoi(v) != 0;
+        else fprintf(stderr, "experiment file: unknown key '%s' ignored\n", k.c_str());
+    }
+    if (e.lod_0_weights_file.empty() || e.lod_1_weights_file.empty() || e.normal_weights_file.empty()) {
+        fprintf(stderr, "experiment file '%s' must define lod0, lod1 and lod2 (coarse, medium, fine)\n", path.c_str());
+        return nullptr;
+    }
+    printf("experiment file %s: (%d,%d) > (%d,%d) > (%d,%d) hidden layers x width, W0=%d\n", path.c_str(),
+           e.lod_0_hidden_U_size, e.n_lod_0_layers + 1, e.lod_1_hidden_U_size, e.n_lod_1_layers + 1,
+           e.normal_hidden_U_size, e.n_normal_layers + 1, e.surface_W0);
+    return &e;
 }
 
 class MIPplicitBase

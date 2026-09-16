@@ -78,7 +78,23 @@ a checkpoint). Too small and the finer levels never engage; too large and
 rays stop short of the surface.
 
 Each experiment (architecture per LoD + checkpoint paths + orientation) is
-declared in `state.cu`'s registry; add new shapes there. The camera starts
+declared in `state.cu`'s registry. The `armadillo` and `thai_statue`
+entries are the released checkpoints byte for byte; `lucy`, `buddha` and
+the others are older models of the same family kept for the figures.
+
+Any released checkpoint set renders without a registry entry: export it to
+the flat `.bin` format plus a runtime descriptor and pass the descriptor:
+
+```bash
+python renderer/scripts/export_experiment.py results/normalized_lucy_gt --out renderer/cuda/build/Release/data/released --flip-y
+cd renderer/cuda/build/Release
+MIP-plicitsRenderer.exe -experiment_file=data/released/normalized_lucy_gt.exp -iters=20,5,5 -delta=0.02 -normal_lod=2
+```
+
+The descriptor is a `key = value` file (`lod0_layers`, `lod0_hidden`,
+`lod0_weights`, ..., `surface_w0`, `flip_y`); the exporter infers the
+architecture from the checkpoint and reproduces the shipped binaries
+byte for byte. The camera starts
 3.5 units back so the whole normalized object is visible; rays are clipped
 to the scene's bounding sphere before tracing (SIREN SDFs are only reliable
 near the [-1,1]³ training domain). If a checkpoint's native axes render the
