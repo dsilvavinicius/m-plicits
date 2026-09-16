@@ -48,23 +48,20 @@ def collect(src):
         for f in sorted(os.listdir(outl)):
             if f.endswith(".ply"):
                 yield osp.join(outl, f), f"appendix_experiments/outliers/{f}"
-    # Checkpoints. The private tree has a few shapes split across "<shape>/" and
-    # "<shape>.ply/" folders; the archive uses one "<shape>/" per shape, with
-    # the plain folder taking precedence stage by stage.
+    # Checkpoints: the paper's runs live in "results/<shape>/". The private
+    # tree also holds "<shape>.ply/" folders from other generations
+    # (PROVENANCE.md: do not use) and the renderer's own copies; only the
+    # paper's folders ship, with whatever stages they have (58168 has no fine
+    # level, the Thai statue only a coarse one; Tab. 2 counts 36/35/34).
     res = osp.join(src, "results")
-    by_stem = {}
-    for d in sorted(os.listdir(res)):
-        if osp.isdir(osp.join(res, d)):
-            stem = d[:-4] if d.endswith(".ply") else d
-            by_stem.setdefault(stem, []).append(d)
-    for stem, dirs in sorted(by_stem.items()):
+    for shape in sorted(os.listdir(res)):
+        if shape.endswith(".ply") or shape.startswith("siren_") or not osp.isdir(osp.join(res, shape)):
+            continue
         for stage in CHECKPOINT_STAGES:
             for name in ("best.pth", "config.yaml"):
-                for d in sorted(dirs, key=lambda x: x.endswith(".ply")):
-                    p = osp.join(res, d, stage, name)
-                    if osp.isfile(p):
-                        yield p, f"results/{stem}/{stage}/{name}"
-                        break
+                p = osp.join(res, shape, stage, name)
+                if osp.isfile(p):
+                    yield p, f"results/{shape}/{stage}/{name}"
 
 
 def collect_extra_tree(root, arc_prefix, skip_names=(".DS_Store",), skip_dirs=("__MACOSX",), skip_ext=(".zip",)):

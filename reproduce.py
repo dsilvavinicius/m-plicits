@@ -82,19 +82,20 @@ def released_shapes():
     results folder name is tolerated (older archives)."""
     shapes = {}
     for d in sorted(glob.glob(osp.join(RESULTS, "*"))):
-        if not osp.isdir(d):
+        stem = osp.basename(d)
+        if not osp.isdir(d) or stem.endswith(".ply"):     # "<shape>.ply/": other generations, not the paper's
             continue
-        name = osp.basename(d)
-        stem = name[:-4] if name.endswith(".ply") else name
-        ck = {s: osp.join(d, s, "best.pth") for s in STAGES}
-        if not all(osp.exists(p) for p in ck.values()):
-            alt = osp.join(RESULTS, stem + ".ply")
-            for s in STAGES:
-                if not osp.exists(ck[s]) and osp.exists(osp.join(alt, s, "best.pth")):
-                    ck[s] = osp.join(alt, s, "best.pth")
-        if all(osp.exists(p) for p in ck.values()) and osp.exists(osp.join(GT_DIR, stem + ".ply")):
-            shapes[stem] = ck
+        ck = {s: osp.join(d, s, "best.pth") for s in STAGES if osp.exists(osp.join(d, s, "best.pth"))}
+        if "coarse" in ck and osp.exists(osp.join(GT_DIR, stem + ".ply")):
+            shapes[stem] = ck          # may lack medium/fine (58168, the Thai statue), as in the paper
     return shapes
+
+
+# Shapes whose stored ground truth does not match the paper's noise meshes
+# (PROVENANCE: 58168's input went through a repair after those meshes were
+# made); excluded from the paper-noise aggregates, listed in the report.
+PAPER_NOISE_EXCLUDE = {"58168"}
+FIXED_BANDS = ["0.1", "0.06"]     # the band widths the paper's March meshes were extracted with
 
 
 def select(shapes, wanted):
@@ -145,20 +146,25 @@ def metrics_python():
 # ----------------------------------------------------------------------------- stages
 def stage_recon(shapes, cond="clean", ckpts=None):
     """Coarse-only and multiscale (culled) meshes, plus an unculled multiscale
-    extraction for the Tab. 5 analogue. Times come from reconstruct.py."""
+    extraction for the Tab. 5 analogue. Times come from reconstruct.py. The
+    culled extraction uses the paper's adaptive band widths (Eq. 5), computed
+    on the cloud each model was trained on: the clean input, or the noisy one
+    for the noise condition."""
     ckpts = ckpts or shapes
     mesh_dir = osp.join(OUT, "meshes", cond)
     os.makedirs(mesh_dir, exist_ok=True)
     times_path = osp.join(OUT, f"recon_times_{cond}.json")
     times = load_json(times_path, {})
     for shape, ck in ckpts.items():
-        jobs = {
-            "coarse": [ck["coarse"]],
-            "fine": [ck["fine"], "--multistage", "--coarse_path", ck["coarse"], "--medium_path", ck["medium"]],
-            "fine_unculled": [ck["fine"], "--coarse_path", ck["coarse"], "--medium_path", ck["medium"]],
-        }
-        if cond != "clean":
-            jobs["medium"] = [ck["medium"], "--multistage", "--coarse_path", ck["coarse"]]
+        train_in = osp.join(NOISE_DIR if cond == "noise" else GT_DIR, shape + ".ply")
+        jobs = {"coarse": [ck["coarse"]]}
+        if "medium" in ck and cond != "clean":
+            jobs["medium"] = [ck["medium"], "--multistage", "--input", train_in, "--coarse_path", ck["coarse"]]
+        if "fine" in ck:
+            base = [ck["fine"], "--coarse_path", ck["coarse"], "--medium_path", ck["medium"]]
+            jobs["fine"] = base + ["--multistage", "--input", train_in]              # Eq. 5 bands
+            jobs["fine_fixedband"] = base + ["--multistage", "--deltas"] + FIXED_BANDS  # the March meshes' bands
+            jobs["fine_unculled"] = base
         for level, extra in jobs.items():
             out = osp.join(mesh_dir, f"{shape}__{level}.ply")
             if osp.exists(out) and level in times.get(shape, {}):
@@ -230,19 +236,23 @@ def train_chain(shape, ck, input_ply, out_root):
     """Three stages with the configs shipped next to the released checkpoints."""
     cfg = {s: osp.join(osp.dirname(ck[s]), "config.yaml") for s in STAGES}
     out = {s: osp.join(out_root, shape, s) for s in STAGES}
+    done = {s: osp.join(out[s], "best.pth") for s in STAGES}
     timings = {}
-    t0 = time.time()
-    run([sys.executable, "train_sdf.py", input_ply, out["coarse"], cfg["coarse"]])
-    timings["coarse"] = time.time() - t0
-    t0 = time.time()
-    run([sys.executable, "experiment_scripts/train_sdf_on_neighborhood.py", input_ply, out["medium"],
-         cfg["medium"], osp.join(out["coarse"], "best.pth")])
-    timings["medium"] = time.time() - t0
-    t0 = time.time()
-    run([sys.executable, "experiment_scripts/train_sdf_on_neighborhood_fine.py", input_ply, out["fine"],
-         cfg["fine"], osp.join(out["coarse"], "best.pth"), osp.join(out["medium"], "best.pth")])
-    timings["fine"] = time.time() - t0
-    return {s: osp.join(out[s], "best.pth") for s in STAGES}, timings
+    cmds = {
+        "coarse": [sys.executable, "train_sdf.py", input_ply, out["coarse"], cfg["coarse"]],
+        "medium": [sys.executable, "experiment_scripts/train_sdf_on_neighborhood.py", input_ply, out["medium"],
+                   cfg["medium"], done["coarse"]],
+        "fine": [sys.executable, "experiment_scripts/train_sdf_on_neighborhood_fine.py", input_ply, out["fine"],
+                 cfg["fine"], done["coarse"], done["medium"]],
+    }
+    for s in STAGES:
+        if osp.exists(done[s]):            # resume: a finished stage is not retrained
+            log(f"{shape}/{s}: already trained, skipping")
+            continue
+        t0 = time.time()
+        run(cmds[s])
+        timings[s] = time.time() - t0
+    return done, timings
 
 
 def stage_train(shapes, cond):
@@ -258,8 +268,9 @@ def stage_train(shapes, cond):
             log(f"no {cond} input for {shape}; skipping")
             continue
         new_ck, t = train_chain(shape, ck, inp, out_root)
-        times[shape] = t
-        save_json(times_path, times)
+        if t:
+            times.setdefault(shape, {}).update(t)
+            save_json(times_path, times)
         new_ckpts[shape] = new_ck
     if new_ckpts:
         mesh_cond = "retrained" if cond == "clean" else "noise"
@@ -301,18 +312,26 @@ def stage_report():
     if clean:
         lines += ["## Tab. 2, ours rows (released checkpoints, clean inputs)", "",
                   "| level | shapes | mean CD | median CD | mean IoU | median IoU |", "|---|---|---|---|---|---|"]
-        for level in ("coarse", "fine"):
+        rows = [("coarse", "coarse (reproduced)"),
+                ("fine_fixedband", "fine, fixed bands 0.1/0.06 (how the paper's March meshes were extracted)"),
+                ("fine", "fine, Eq. 5 adaptive bands (the paper's described inference)"),
+                ("fine_unculled", "fine, unculled (all levels everywhere)")]
+        for level, label in rows:
             if level in clean:
                 a = agg(clean[level])
-                p = PAPER["tab2"][level]
-                lines.append(f"| {level} (reproduced) | {a['n']} | {fmt(a['mean_cd'], 1)} | {fmt(a['median_cd'], 1)} "
+                lines.append(f"| {label} | {a['n']} | {fmt(a['mean_cd'], 1)} | {fmt(a['median_cd'], 1)} "
                              f"| {fmt(a['mean_iou'])} | {fmt(a['median_iou'])} |")
-                lines.append(f"| {level} (paper) | 37 | {fmt(p['mean_cd'], 1)} | {fmt(p['median_cd'], 1)} "
+            if level in ("coarse", "fine"):
+                p = PAPER["tab2"][level]
+                lines.append(f"| {level} (paper, as printed) | 37 | {fmt(p['mean_cd'], 1)} | {fmt(p['median_cd'], 1)} "
                              f"| {fmt(p['mean_iou'])} | {fmt(p['median_iou'])} |")
-        if "fine_unculled" in clean:
-            a = agg(clean["fine_unculled"])
-            lines.append(f"| fine, unculled extraction | {a['n']} | {fmt(a['mean_cd'], 1)} | {fmt(a['median_cd'], 1)} "
-                         f"| {fmt(a['mean_iou'])} | {fmt(a['median_iou'])} |")
+        lines += ["", "Shape counts follow the released checkpoints: 58168 has no fine level and the Thai "
+                  "statue only a coarse one. Means are sensitive to a few degenerate shapes "
+                  "(the worst three by CD are listed below); medians are the robust comparison.", ""]
+        for level in ("coarse", "fine"):
+            if level in clean:
+                worst = sorted(clean[level].items(), key=lambda kv: -kv[1]["cd"])[:3]
+                lines.append(f"- {level}, worst CD: " + ", ".join(f"{s} {fmt(v['cd'], 1)} (IoU {fmt(v['iou'])})" for s, v in worst))
         lines.append("")
     times = load_json(osp.join(OUT, "recon_times_clean.json"), {})
     if times:
@@ -334,11 +353,14 @@ def stage_report():
         lines.append("")
     pn = read_metrics("paper_noise")
     if pn:
+        excluded = sorted(s for lv in pn.values() for s in lv if s in PAPER_NOISE_EXCLUDE)
         lines += ["## Tab. 3, ours rows (the paper's noise reconstructions, clean ground truth)", "",
+                  f"Excluded from the aggregates: {', '.join(sorted(set(excluded))) or 'none'} "
+                  "(stored ground truth no longer matches those meshes; see PROVENANCE).", "",
                   "| level | shapes | mean CD | median CD | mean IoU | median IoU |", "|---|---|---|---|---|---|"]
         for level in ("coarse", "medium", "fine"):
             if level in pn:
-                a = agg(pn[level])
+                a = agg({s: v for s, v in pn[level].items() if s not in PAPER_NOISE_EXCLUDE})
                 p = PAPER["tab3"][level]
                 lines.append(f"| {level} (reproduced) | {a['n']} | {fmt(a['mean_cd'], 1)} | {fmt(a['median_cd'], 1)} "
                              f"| {fmt(a['mean_iou'])} | {fmt(a['median_iou'])} |")

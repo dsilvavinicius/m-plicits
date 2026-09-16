@@ -9,9 +9,28 @@ and a set of checkpoints.
 import argparse
 import os
 import os.path as osp
+import numpy as np
 import torch
 from i3d.meshing import create_mesh_multistage
 from i3d.util import from_pth
+
+
+def adaptive_deltas(models, input_ply, device, eps=0.3, batch=2 ** 18):
+    """Band widths of the paper's inference (Eq. 5): delta_i = (1+eps) * max_j |f_i(x_j)|,
+    where f_i is the partial sum up to level i and x_j runs over the training points.
+    `models` is ordered coarse -> fine; returns one delta per residual level."""
+    import open3d as o3d
+    pts = torch.from_numpy(np.asarray(o3d.io.read_point_cloud(input_ply).points)).float().to(device)
+    deltas = []
+    with torch.no_grad():
+        for level in range(1, len(models)):
+            worst = 0.0
+            for i in range(0, pts.shape[0], batch):
+                chunk = pts[i:i + batch]
+                s = sum(models[k](chunk)["model_out"].squeeze(-1) for k in range(level))
+                worst = max(worst, float(s.abs().max()))
+            deltas.append((1.0 + eps) * worst)
+    return deltas
 
 
 if __name__ == "__main__":
@@ -48,6 +67,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "--multistage", action="store_true", help="Use the multiscale optimization (finer levels only evaluated near the surface)."
     )
+    parser.add_argument(
+        "--input", default=None,
+        help="Training point cloud (.ply). With --multistage, the band widths are the paper's adaptive"
+             " deltas computed on it (Eq. 5: delta_i = 1.3 * max_j |f_i(x_j)|); without it, fixed"
+             " fallback widths are used, which is NOT the paper's inference."
+    )
+    parser.add_argument(
+        "--deltas", type=float, nargs="+", default=None,
+        help="Explicit band widths (one per residual level), overriding --input / the fallback."
+    )
 
     args = parser.parse_args()
     out_dir = osp.split(args.output_path)[0]
@@ -79,7 +108,15 @@ if __name__ == "__main__":
         print(model_coarse)
 
     if args.multistage:
-        deltas=[0.1, 0.06]
+        if args.deltas is not None:
+            deltas = list(args.deltas)
+        elif args.input is not None:
+            deltas = adaptive_deltas(model_list[::-1], args.input, device)
+            print("adaptive band widths (Eq. 5):", ", ".join(f"{d:.3e}" for d in deltas))
+        else:
+            deltas = [0.1, 0.06][:len(model_list) - 1]
+            print("[WARNING] --multistage without --input: using fixed band widths"
+                  f" {deltas}; pass the training point cloud for the paper's adaptive bands.")
     else:
         deltas=[]
 
