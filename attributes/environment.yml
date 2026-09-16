@@ -1,25 +1,15 @@
+# Texture-mapping environment (verified 2026-09-16 on Windows 11, RTX 5090).
+# PyTorch3D has no Windows conda build: install it from source afterwards
+# (needs the CUDA 12.8 toolkit + a C++ compiler, ~15 min):
+#   conda env create -f environment.yml && conda activate neural_textures
+#   pip install --no-build-isolation -r ../metrics/requirements-pytorch3d.txt
+# On Linux, `conda install -c pytorch3d pytorch3d` works instead of the source build.
 name: neural_textures
 channels:
-  - pytorch
-  - pytorch3d
-  - nvidia
   - conda-forge
 dependencies:
-  - pytorch
-  - torchvision
-  - torchaudio
-  - pytorch-cuda
-  - cudatoolkit
-  - configargparse
-  - scikit-learn
-  - scikit-image
-  - matplotlib
-  - tensorboard
-  - plyfile
-  - plotly
-  - iopath
-  - open3d
+  - python=3.10
   - pip
+  - setuptools<81
   - pip:
-    - mesh-to-sdf
-    - pytorch3d
+      - -r requirements.txt

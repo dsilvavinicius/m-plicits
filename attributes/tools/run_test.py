@@ -13,6 +13,7 @@ import shlex
 import shutil
 import subprocess
 import os
+import sys
 
 
 def main():
@@ -58,8 +59,8 @@ def main():
 
     for c in args.checkpoints:
 
-        experiment_name = args.base_dir.split("/")[-1] + f"_checkpoint-{c}"
-        default_args = f"python experiment_scripts/{script_meshing}.py --experiment_name={experiment_name} --w0={args.w0} --shape_net_path={args.shape_net_path} --shape_net_w0={args.shape_net_w0}"
+        experiment_name = os.path.basename(os.path.normpath(args.base_dir)) + f"_checkpoint-{c}"
+        default_args = [sys.executable, f"experiment_scripts/{script_meshing}.py", f"--experiment_name={experiment_name}", f"--w0={args.w0}", f"--shape_net_path={args.shape_net_path}", f"--shape_net_w0={args.shape_net_w0}"]
 
         model_name = ""
         if c == "final":
@@ -70,7 +71,7 @@ def main():
             model_name = f"model_epoch_{c:0>4}.pth"
 
         checkpoint_path = checkpoint_dir + "/" + model_name
-        checkpoint_args = f"{default_args} --checkpoint_path={checkpoint_path}"
+        checkpoint_args = default_args + [f"--checkpoint_path={checkpoint_path}"]
 
         params[c] = dict()
 
@@ -78,9 +79,8 @@ def main():
         while args.resolution // resolution_divisor > 1:
             r = args.resolution // resolution_divisor
             params[c]["resolution"] = r
-            cmd_line = f"{checkpoint_args} --resolution={r}"
+            lex_args = checkpoint_args + [f"--resolution={r}"]   # an argument list: shlex would eat Windows path backslashes
 
-            lex_args = shlex.split(cmd_line)
             try:
                 subprocess.run(lex_args, check=True)
             except subprocess.CalledProcessError:
@@ -90,6 +90,8 @@ def main():
             else:
                 break
 
+        if not os.path.exists(os.path.join("logs", experiment_name, "test.ply")):
+            raise SystemExit(f"{script_meshing}.py failed for checkpoint {c} at every resolution; see the errors above")
         shutil.copyfile(
             os.path.join("logs", experiment_name, "test.ply"),
             os.path.join(output_dir, f"{c}.ply")

@@ -10,9 +10,16 @@ Neural **normal** mapping is not trained — it is the analytic gradient
 ## Environment
 
 ```bash
-conda env create -f environment.yml   # env: neural_textures (PyTorch3D required)
+conda env create -f environment.yml   # env: neural_textures
 conda activate neural_textures
+pip install --no-build-isolation -r ../metrics/requirements-pytorch3d.txt   # PyTorch3D from source (Windows; Linux can use the pytorch3d conda channel)
 ```
+
+Verified end to end on 2026-09-16 (train 100 epochs on `spot`, extract the
+coloured mesh) on Windows 11 / RTX 5090. If `import mesh_to_sdf` dies
+silently on Windows, reinstall numpy (`pip install --force-reinstall --no-deps numpy==2.2.6`):
+a damaged BLAS DLL from a mixed conda/pip install crashes at the first
+matrix product.
 
 ## Data
 
