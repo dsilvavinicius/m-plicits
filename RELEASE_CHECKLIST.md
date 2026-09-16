@@ -5,11 +5,8 @@ public or need the final author information. Work top to bottom.
 
 ## 1. Authors and links
 
-- [ ] `docs/index.html`: replace "Authors revealed on acceptance" (the `.authors` line) and the BibTeX block; keep the venue line.
-- [ ] `README.md`: Citation block.
-- [ ] `LICENSE`: copyright holder line.
-- [ ] `overleaf/neurips2026/make_arxiv.py`: `AUTHORS` block, then rerun `python make_arxiv.py`.
-- [ ] Camera-ready wrapper `neurips_2026.tex`: `\usepackage[main, final]{neurips_2026}`, the same author block, and the abstract's last sentence pointing at the repository (already done in the arXiv copy).
+- [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the author list (2026-09-16). Affiliations were inferred from e-mail domains; confirm Isabelle Melo (listed under PUC-Rio), André Araújo ("Google") and Nuno Gonçalves ("University of Coimbra"), and Luiz Schirmer's e-mail (the address on his personal site).
+- [ ] Camera-ready wrapper `neurips_2026.tex`: switch to `\usepackage[main, final]{neurips_2026}` and make the abstract's last sentence point at the repository (already done in the arXiv copy).
 
 ## 2. Data archives
 

@@ -99,7 +99,15 @@ MIP-plicitsRenderer.exe -experiment_file=data/released/normalized_lucy_gt.exp -i
 ## Citation
 
 ```bibtex
-% TODO on acceptance
+@inproceedings{mplicits2026,
+  title     = {M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals},
+  author    = {da Silva, Vin{\'\i}cius and Melo, Isabelle and Bessa, Matheus and
+               Schardong, Guilherme and Schirmer, Luiz and Ara{\'u}jo, Andr{\'e} and
+               Gon{\c{c}}alves, Nuno and Lopes, H{\'e}lio and Raposo, Alberto and
+               Velho, Luiz and Novello, Tiago},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026}
+}
 ```
 
 ## License
