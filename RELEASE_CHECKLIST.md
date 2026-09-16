@@ -5,7 +5,8 @@ public or need the final author information. Work top to bottom.
 
 ## 1. Authors and links
 
-- [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the author list (2026-09-16). Affiliations were inferred from e-mail domains; confirm Isabelle Melo (listed under PUC-Rio), André Araújo ("Google") and Nuno Gonçalves ("University of Coimbra"), and Luiz Schirmer's e-mail (the address on his personal site).
+- [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the confirmed author list and affiliations (2026-09-16).
+- [x] Decisions recorded 2026-09-16: data on a GitHub release (v1.0), arXiv under the arXiv.org perpetual non-exclusive license, Tab. 2 kept as printed (the reproducible numbers are in REPRODUCING.md §7).
 - [ ] Camera-ready wrapper `neurips_2026.tex`: switch to `\usepackage[main, final]{neurips_2026}` and make the abstract's last sentence point at the repository (already done in the arXiv copy).
 
 ## 2. Data archives
