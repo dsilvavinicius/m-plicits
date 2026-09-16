@@ -120,15 +120,25 @@ def load_json(path, default=None):
 
 
 def metrics_python():
+    """Command prefix that runs Python inside the `metrics` environment.
+
+    `conda run` is preferred: it activates the environment, which on Windows
+    is what puts open3d's DLL dependencies on the PATH (calling the
+    interpreter directly fails with "DLL load failed while importing pybind").
+    """
     env = os.environ.get("MPLICITS_METRICS_PYTHON")
     if env:
         return [env]
+    root = osp.dirname(osp.dirname(sys.prefix))          # <conda root>/envs/<this env>
+    for conda in (os.environ.get("CONDA_EXE"), shutil.which("conda"),
+                  osp.join(root, "Scripts", "conda.exe"), osp.join(root, "bin", "conda"),
+                  osp.join(root, "condabin", "conda.bat")):
+        if conda and osp.exists(conda):
+            return [conda, "run", "-n", "metrics", "--no-capture-output", "python"]
     envs = osp.dirname(sys.prefix)
     for cand in (osp.join(envs, "metrics", "python.exe"), osp.join(envs, "metrics", "bin", "python")):
         if osp.exists(cand):
             return [cand]
-    if shutil.which("conda"):
-        return ["conda", "run", "-n", "metrics", "--no-capture-output", "python"]
     sys.exit("metrics environment not found: create metrics/environment.yml or set MPLICITS_METRICS_PYTHON")
 
 
