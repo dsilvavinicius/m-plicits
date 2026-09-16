@@ -39,3 +39,6 @@ dist/
 .idea/
 Thumbs.db
 .DS_Store
+
+# Runtime DLLs the renderer needs next to the executable (the only binaries in the repo)
+!renderer/cuda/lib/dll/*.dll

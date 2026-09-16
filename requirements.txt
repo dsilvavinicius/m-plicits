@@ -1,5 +1,5 @@
 --extra-index-url https://download.pytorch.org/whl/cu128
-setuptools>=68
+setuptools<81   # dash (pulled in by open3d) still imports pkg_resources
 torch==2.7.1
 numpy==2.2.6
 open3d==0.19.0
