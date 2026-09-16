@@ -42,3 +42,6 @@ Thumbs.db
 
 # Runtime DLLs the renderer needs next to the executable (the only binaries in the repo)
 !renderer/cuda/lib/dll/*.dll
+
+# reproduce.py outputs
+reproduction/

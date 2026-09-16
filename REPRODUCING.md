@@ -144,5 +144,91 @@ rendered by the real-time renderer (`-normal_lod`, NM rows of Tab. 4).
 
 ## 7. Verification log
 
-Filled in from `reproduction/REPORT.md` after each release check; see the
-section at the end of this file.
+**2026-09-16, fresh clone, Windows 11, RTX 5090, CUDA 12.8.** Repository
+cloned into an empty folder, archive unpacked, environments created from
+the shipped files, renderer built from scratch, then `reproduce.py` for
+every stage. Full per-shape output in the run's `reproduction/` folder;
+the aggregates:
+
+### Tab. 2, ours rows (released checkpoints, clean inputs, 512³, 500K samples)
+
+| level | shapes | mean CD | median CD | mean IoU | median IoU |
+|---|---|---|---|---|---|
+| coarse | 36 | 3.90E-05 | 2.17E-05 | 0.522 | 0.579 |
+| coarse, paper as printed | 37 | 5.36E-05 | 3.80E-05 | 0.448 | 0.459 |
+| fine, Eq. 5 adaptive bands (`reconstruct.py --multistage --input`) | 34 | 2.01E-05 | 1.14E-05 | 0.723 | 0.869 |
+| fine, paper as printed | 37 | 6.57E-05 | 1.87E-05 | 0.586 | 0.867 |
+| fine, fixed bands 0.1/0.06 (`--deltas 0.1 0.06`) | 34 | 1.40E-04 | 6.87E-05 | 0.489 | 0.583 |
+| fine, unculled (all levels everywhere) | 34 | 1.95E-04 | 7.49E-05 | 0.466 | 0.469 |
+
+Two facts about provenance, so the comparison is read correctly:
+
+- The released checkpoints reproduce the paper's own March mesh
+  generation per shape: recomputing that generation with the same metric
+  code gives coarse 3.90E-05 / 2.16E-05 / 0.522 / 0.579 and fine
+  1.42E-04 / 7.96E-05 / 0.489 / 0.583; the rows above match them
+  (median CD ratio 1.00, 68 of 69 shape-levels within 25%). Those March
+  fine meshes were extracted with the fixed 0.1/0.06 band widths that
+  `reconstruct.py` carried until this release.
+- The printed Tab. 2 ours rows were produced by a collaborator's
+  reconstruction pass whose meshes are not on the machine used here, so
+  they cannot be re-derived exactly; the reproducible numbers with the
+  paper's described inference (adaptive bands) are at or above the
+  printed fine row on every column and above the printed coarse row.
+  The shape counts differ because 58168 has no fine checkpoint and the
+  Thai statue only a coarse one.
+
+Degenerate shapes worth knowing about when reading means: coarse 95444
+(CD 2.4E-04) and the Thai statue (2.5E-04); fine 95444 (1.7E-04). The
+Armadillo's fine level carries a small detached component away from the
+surface (IoU 0.05, CD 5.3E-05).
+
+### Extraction time at 512³ (Tab. 2 sampling column; Tab. 5 analogue)
+
+| extraction | shapes | mean seconds | paper |
+|---|---|---|---|
+| coarse only | 36 | 1.26 | 1.51 |
+| multiscale, band-culled | 36 | 3.07 | 5.29 |
+| multiscale, unculled | 36 | 6.14 | Tab. 5 baseline analogue (2.0× slower) |
+
+### Tab. 3, ours rows (the paper's noise reconstructions, `reproduce.py paper-noise`)
+
+35 shapes; 58168 excluded (its stored input was repaired after those
+meshes were made, see PROVENANCE).
+
+| level | mean CD | median CD | mean IoU | median IoU | paper (mean / median CD, mean / median IoU) |
+|---|---|---|---|---|---|
+| coarse | 5.80E-05 | 4.43E-05 | 0.442 | 0.467 | 7.42E-05 / 5.33E-05, 0.381 / 0.403 |
+| medium | 3.84E-05 | 3.03E-05 | 0.551 | 0.634 | 4.62E-05 / 3.03E-05, 0.537 / 0.638 |
+| fine | 2.59E-05 | 1.65E-05 | 0.529 | 0.548 | 3.36E-05 / 1.62E-05, 0.582 / 0.591 |
+
+Retraining on the noisy input from scratch (`reproduce.py noise`), fine
+level against the clean ground truth: Armadillo CD 1.38E-05 / IoU 0.869,
+Thingi 354371 CD 1.20E-05 / IoU 0.859.
+
+### Tab. 4, real-time renderer (Armadillo, 512², 500 frames)
+
+| row | reproduced FPS | paper FPS |
+|---|---|---|
+| (400,4) SIREN baseline | 16 | 19 |
+| (128,2) coarse | 118 | 180 |
+| (128,2)▷(256,2) (NM) | 64 | 85 |
+| (128,2)▷(256,2) | 62 | 70 |
+| (128,2)▷(256,2)▷(400,2) (NM) | 35 | 43 |
+| (128,2)▷(256,2)▷(400,2) | 31 | 35 |
+
+Same ordering and ratios; the absolute values are 65–90% of the printed
+ones on this build (sm_86 binary run through the driver's JIT on an
+sm_120 GPU gives the same numbers as a native sm_120 build).
+
+### Training from scratch (`reproduce.py train`, Armadillo, shipped configs)
+
+The retrained coarse level is identical to the released one (CD 2.07E-05,
+IoU 0.778, fixed seed); the retrained fine level scores CD 4.89E-05
+against 5.26E-05 for the released checkpoint. Wall time 2.5 + 1.0 + 1.9
+minutes for the three stages (paper averages: 4.07 coarse, 8.53 full).
+
+### Texture mapping
+
+`attributes/`: 100-epoch texture training on `spot` and colored-mesh
+extraction run end to end in the `neural_textures` environment.
