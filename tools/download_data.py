@@ -19,7 +19,7 @@ ROOT = osp.dirname(osp.dirname(osp.abspath(__file__)))
 RELEASE = "https://github.com/dsilvavinicius/m-plicits/releases/download/v1.0"
 ARCHIVES = {
     # name: (release asset URL, sha256)  -- filled by tools/make_input_zip.py --sha
-    "m-plicits-data.zip": (f"{RELEASE}/m-plicits-data.zip", "4d5b89028ab698bfda0d910c8ac82438e6a57a0c7e9af651fed97c315e06db86"),
+    "m-plicits-data.zip": (f"{RELEASE}/m-plicits-data.zip", "99bd93725a8efcf9a2d60ed9c5e52b8b348369461d3ed33205a17b80d20310e5"),
     "m-plicits-paper-meshes.zip": (f"{RELEASE}/m-plicits-paper-meshes.zip", "ade561e88b1cbb53f80c9c6a2f28cd2ae73109435c3d7c58cb44d562ec95d933"),
 }
 
