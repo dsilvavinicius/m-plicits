@@ -42,15 +42,22 @@ nav .logo{font-weight:800;letter-spacing:-.01em}
 nav .links a{color:#c7cbd6;text-decoration:none;margin-left:22px;font-size:14px;font-weight:500}
 nav .links a:hover{color:var(--amber)}
 .hgrid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center;padding:44px 0 40px}
-.kicker{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--amber)}
-.kicker::before{content:"";width:26px;height:2px;background:var(--amber)}
-.display{font-family:var(--serif);font-weight:400;font-size:64px;line-height:1.0;letter-spacing:-.015em;margin:18px 0 20px}
-.display i{font-style:italic;color:var(--amber)}
-.ptitle{font-size:18px;font-weight:600;color:#fff;max-width:520px}
-.lede{color:#b7bccb;font-size:16.5px;max-width:520px;margin-top:10px}
-.authors{color:#8b91a3;font-size:14px;margin-top:14px}
+.badge{display:inline-flex;align-items:center;gap:12px;background:#fff;color:var(--navy);border-radius:14px;padding:8px 18px 8px 10px;text-decoration:none;box-shadow:0 12px 32px rgba(0,0,0,.35);max-width:100%}
+.badge img{height:40px;width:auto;display:block}
+.badge .v{display:flex;flex-direction:column;line-height:1.15;border-left:1px solid #dfe2ea;padding-left:12px}
+.badge .v b{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.badge .v small{font-size:12px;font-weight:500;color:#5b6170;margin-top:2px;white-space:nowrap}
+.badge:hover{box-shadow:0 12px 32px rgba(245,158,11,.4)}
+.display{font-family:var(--serif);font-weight:400;font-size:56px;line-height:1.03;letter-spacing:-.015em;margin:24px 0 0}
+.display i{font-style:italic;color:var(--amber);white-space:nowrap}
+.authors{margin-top:22px;font-size:15.5px;line-height:1.55;color:#eef0f5;font-weight:500;max-width:600px}
+.authors sup{font-size:.62em;color:var(--amber);margin-left:1px}
+.authors .affil{display:block;margin-top:6px;font-size:13.5px;font-weight:400;color:#9ba1b3}
+.tagline{font-family:var(--serif);font-size:25px;line-height:1.25;color:#d7dae4;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);max-width:560px}
+.tagline i{font-style:italic;color:var(--amber)}
+.lede{color:#a9aec0;font-size:15.5px;max-width:540px;margin-top:8px}
 .btns{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:1.5px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;font-size:14px;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;font-size:14px;font-weight:600}
 .btn:hover{border-color:var(--amber);color:var(--amber)}
 .btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1200}
 .btn.primary:hover{background:#fbbf24;color:#1a1200}
@@ -127,13 +134,13 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 .venue img{height:34px;background:#fff;padding:5px 8px;border-radius:6px}
 
 @media(max-width:920px){
-  .hgrid{grid-template-columns:1fr;gap:34px}.display{font-size:46px}
+  .hgrid{grid-template-columns:1fr;gap:34px}.display{font-size:48px}
   .stats{grid-template-columns:1fr 1fr}.stat{border:0;margin:0}
   .how{grid-template-columns:1fr}.how img{max-width:420px}
   .grid{grid-template-columns:repeat(2,1fr)}.rtgrid{grid-template-columns:1fr 1fr}.res{grid-template-columns:1fr}
   nav .links a{margin-left:14px}
 }
-@media(max-width:520px){.display{font-size:38px}.grid{grid-template-columns:1fr 1fr}h2{font-size:32px}nav .links{display:none}}
+@media(max-width:520px){.display{font-size:38px}.badge img{height:34px}.badge .v b{font-size:17px}.badge .v small{display:none}.tagline{font-size:21px}.grid{grid-template-columns:1fr 1fr}h2{font-size:32px}nav .links{display:none}}
 </style>
 </head>
 <body>
@@ -145,11 +152,11 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 
 <div class="hgrid">
 <div>
-<div class="kicker">NeurIPS 2026</div>
-<h1 class="display">Surfaces that stay <i>clean</i> when the data is not.</h1>
-<div class="ptitle">M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals</div>
+<a class="badge" href="https://neurips.cc/Conferences/2026" target="_blank" rel="noopener"><img src="assets/neurips_mark.png" alt=""><span class="v"><b>NeurIPS 2026</b><small>40th Conference on Neural Information Processing Systems</small></span></a>
+<h1 class="display"><i>M-plicits</i>: Neural Implicit Surfaces via Nested Multiscale Residuals</h1>
+<div class="authors">Vinícius da Silva<sup>1</sup>, Isabelle Melo<sup>1</sup>, Matheus Bessa<sup>1</sup>, Guilherme Schardong<sup>2</sup>, Luiz Schirmer<sup>2</sup>, André Araújo<sup>3</sup>, Nuno Gonçalves<sup>4</sup>, Hélio Lopes<sup>1</sup>, Alberto Raposo<sup>1</sup>, Luiz Velho<sup>5</sup>, Tiago Novello<sup>5</sup><span class="affil"><sup>1</sup>PUC-Rio &middot; <sup>2</sup>Universidade Federal de Santa Maria &middot; <sup>3</sup>Google DeepMind &middot; <sup>4</sup>University of Coimbra &middot; <sup>5</sup>IMPA</span></div>
+<div class="tagline">Surfaces that stay <i>clean</i> when the data is not.</div>
 <div class="lede">A neural surface representation whose training bands never see the noise, and the real-time algorithms that fall out of it.</div>
-<div class="authors">Vinícius da Silva<sup>1</sup>, Isabelle Melo<sup>1</sup>, Matheus Bessa<sup>1</sup>, Guilherme Schardong<sup>2</sup>, Luiz Schirmer<sup>2</sup>, André Araújo<sup>3</sup>, Nuno Gonçalves<sup>4</sup>, Hélio Lopes<sup>1</sup>, Alberto Raposo<sup>1</sup>, Luiz Velho<sup>5</sup>, Tiago Novello<sup>5</sup><br><span style="color:#7c8294"><sup>1</sup>PUC-Rio &middot; <sup>2</sup>Universidade Federal de Santa Maria &middot; <sup>3</sup>Google DeepMind &middot; <sup>4</sup>University of Coimbra &middot; <sup>5</sup>IMPA</span></div>
 <div class="btns">
 <!-- TODO on release: real URLs -->
 <a class="btn primary" href="#">&#128196; Paper</a><!-- TODO on acceptance: PDF link -->
@@ -258,7 +265,7 @@ Your browser does not support the video tag &mdash; <a href="assets/results.mp4"
   booktitle = {Advances in Neural Information Processing Systems},
   year      = {2026}
 }</pre>
-<div class="venue"><img src="assets/neurips_logo.png" alt="NeurIPS"><span>Thirty-ninth Conference on Neural Information Processing Systems &middot; code, data and released models on acceptance</span></div>
+<div class="venue"><img src="assets/neurips_logo.png" alt="NeurIPS"><span>40th Conference on Neural Information Processing Systems (NeurIPS 2026)</span></div>
 </div></div>
 
 <script>
