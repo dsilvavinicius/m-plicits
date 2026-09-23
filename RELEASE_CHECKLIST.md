@@ -7,7 +7,7 @@ public or need the final author information. Work top to bottom.
 
 - [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the confirmed author list and affiliations (2026-09-16).
 - [x] Decisions recorded 2026-09-16: data on a GitHub release (v1.0), arXiv under the arXiv.org perpetual non-exclusive license, Tab. 2 kept as printed (the reproducible numbers are in REPRODUCING.md §7).
-- [ ] Camera-ready wrapper `neurips_2026.tex`: switch to `\usepackage[main, final]{neurips_2026}` and make the abstract's last sentence point at the repository (already done in the arXiv copy).
+- [ ] Camera-ready wrapper `neurips_2026.tex`: switch to `\usepackage[main, final]{neurips_2026}` and make the abstract's last sentence point at the repository (already done in the arXiv copy). Then replace `docs/assets/m-plicits.pdf` with the camera-ready PDF (`python overleaf/neurips2026/compress_pdf.py <pdf> docs/assets/m-plicits.pdf --quality 80 --max-dpi 200`).
 
 ## 2. Data archives
 
@@ -28,7 +28,8 @@ python tools/make_input_zip.py --src ../i3d_work --out ../m-plicits-data.zip \
 
 - [x] `python overleaf/neurips2026/make_arxiv.py`; `overleaf/arxiv/clean/main_arxiv.pdf` checked (page 1 author block fixed 2026-09-21).
 - [x] v1 uploaded 2026-09-23 as arXiv submission 8105364: `[preprint]` build, abstract says "will be released at" the repository, Comments empty, cs.CV primary with cs.GR and cs.LG cross-lists, arXiv non-exclusive license. The id arrives by e-mail at announcement (14:00 ET cutoff, announced 20:00 ET).
-- [ ] After the arXiv id exists: fill the Paper and arXiv buttons in `docs/index.html` (two `TODO on acceptance` comments) and the README's paper link.
+- [x] Paper button and Resources card in `docs/index.html`, and the README link, point at `docs/assets/m-plicits.pdf` (the preprint, images recompressed to 200 dpi, 9.5 MB) since 2026-09-23.
+- [ ] After the arXiv id exists: restore the arXiv button in `docs/index.html` (commented placeholder next to the Paper button) and add the arXiv link to the README.
 - [ ] v2 on acceptance: switch `repo_sentence` in `make_arxiv.py` back to "are available at", name the venue in Comments (see `overleaf/arxiv/SUBMISSION_NOTES.md`), replace via the arXiv "Replace" action.
 
 ## 4. Repository and project page

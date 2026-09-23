@@ -1,7 +1,7 @@
 # M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals
 
 [Project page](https://dsilvavinicius.github.io/m-plicits) ·
-Paper (NeurIPS 2026; link added on publication) ·
+[Paper](docs/assets/m-plicits.pdf) (preprint PDF; arXiv link on announcement) ·
 [Data & models](https://github.com/dsilvavinicius/m-plicits/releases)
 
 Official code release. M-plicits models a signed distance function as a
