@@ -3,6 +3,12 @@
 Everything below is prepared; the steps are the ones that make things
 public or need the final author information. Work top to bottom.
 
+State on 2026-09-23: data on GitHub release v1.0, arXiv v1 submitted (id
+pending), project page and README complete with the preprint PDF. What is
+left for a positive decision, in order: the camera-ready wrapper and PDF
+(step 1), make the repository public and enable Pages (step 4), arXiv v2
+and the arXiv links (step 3), the fresh-clone sanity run (step 5).
+
 ## 1. Authors and links
 
 - [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the confirmed author list and affiliations (2026-09-16).
@@ -20,8 +26,8 @@ python tools/make_input_zip.py --src ../i3d_work --out ../m-plicits-data.zip \
     --noise-meshes ../i3d_work/rebuttal_2026/paper_noise_recs/noise_data_and_reconstructions/rec/noise_meshes
 ```
 
-- [ ] Paste both SHA-256 values into `tools/download_data.py` (`ARCHIVES`).
-- [ ] Publish: `gh release create v1.0 ../m-plicits-data.zip ../m-plicits-paper-meshes.zip --title "Data and released models" --notes "Inputs, noisy variants, released checkpoints, renderer/texture assets; optional paper reconstruction meshes."` (each asset is under GitHub's 2 GB limit). A Google Drive mirror is optional: put the file ids in the release notes and pass them to `download_data.py --gdrive`.
+- [x] Both SHA-256 values are in `tools/download_data.py` (`ARCHIVES`), 2026-09-16.
+- [x] Published 2026-09-16 as release v1.0 (`gh release create v1.0 ../m-plicits-data.zip ../m-plicits-paper-meshes.zip --title "Data and released models" ...`); the release becomes visible with the repository. A Google Drive mirror is optional: put the file ids in the release notes and pass them to `download_data.py --gdrive`.
 - [ ] Optional, citable: archive the release on Zenodo for a DOI and add it to the README.
 
 ## 3. arXiv
