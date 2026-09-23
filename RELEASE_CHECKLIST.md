@@ -4,16 +4,20 @@ Everything below is prepared; the steps are the ones that make things
 public or need the final author information. Work top to bottom.
 
 State on 2026-09-23: data on GitHub release v1.0, arXiv v1 submitted (id
-pending), project page and README complete with the preprint PDF. What is
-left for a positive decision, in order: the camera-ready wrapper and PDF
-(step 1), make the repository public and enable Pages (step 4), arXiv v2
-and the arXiv links (step 3), the fresh-clone sanity run (step 5).
+pending), camera-ready wrapper and PDF built (the page's Paper link is the
+camera-ready copy), arXiv v2 package pre-built with the "are available"
+wording. What is left for a positive decision, in order: make the
+repository public and enable Pages (step 4), arXiv v2 once v1 is announced
+and the decision allows naming the venue (step 3), the arXiv links when the
+id arrives (step 3, not tied to the decision), the public-download sanity
+run (step 5).
 
 ## 1. Authors and links
 
 - [x] `docs/index.html` authors line and BibTeX, `README.md` citation, `LICENSE` holders, the arXiv `AUTHORS` block and the camera-ready wrapper all carry the confirmed author list and affiliations (2026-09-16).
 - [x] Decisions recorded 2026-09-16: data on a GitHub release (v1.0), arXiv under the arXiv.org perpetual non-exclusive license, Tab. 2 kept as printed (the reproducible numbers are in REPRODUCING.md §7).
-- [ ] Camera-ready wrapper `neurips_2026.tex`: switch to `\usepackage[main, final]{neurips_2026}` and make the abstract's last sentence point at the repository (already done in the arXiv copy). Then replace `docs/assets/m-plicits.pdf` with the camera-ready PDF (`python overleaf/neurips2026/compress_pdf.py <pdf> docs/assets/m-plicits.pdf --quality 80 --max-dpi 200`).
+- [x] Camera-ready wrapper `neurips_2026.tex` uses `\usepackage[main, final]{neurips_2026}` and the abstract's last sentence points at the repository (2026-09-23); `docs/assets/m-plicits.pdf` is the compressed camera-ready build (38 pages with the checklist, NeurIPS 2026 footer). Compile recipe and notes: `overleaf/neurips2026/CAMERA_READY_CHANGES.md`.
+- [ ] On acceptance, if the camera-ready changes (reviewer requests, acknowledgments): recompile (`BIBINPUTS="..;" latexmk -pdf -bibtex -g neurips_2026.tex` in `overleaf/neurips2026`), then `python overleaf/neurips2026/compress_pdf.py overleaf/neurips2026/neurips_2026.pdf docs/assets/m-plicits.pdf --quality 80 --max-dpi 200`, commit, push. Upload the camera-ready to OpenReview as NeurIPS instructs.
 
 ## 2. Data archives
 
