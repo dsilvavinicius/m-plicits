@@ -26,9 +26,10 @@ python tools/make_input_zip.py --src ../i3d_work --out ../m-plicits-data.zip \
 
 ## 3. arXiv
 
-- [ ] `python overleaf/neurips2026/make_arxiv.py` (after step 1); check `overleaf/arxiv/clean/main_arxiv.pdf`.
-- [ ] Upload `overleaf/arxiv/m-plicits-arxiv.zip`; metadata and abstract in `overleaf/arxiv/SUBMISSION_NOTES.md`.
+- [x] `python overleaf/neurips2026/make_arxiv.py`; `overleaf/arxiv/clean/main_arxiv.pdf` checked (page 1 author block fixed 2026-09-21).
+- [x] v1 uploaded 2026-09-23 as arXiv submission 8105364: `[preprint]` build, abstract says "will be released at" the repository, Comments empty, cs.CV primary with cs.GR and cs.LG cross-lists, arXiv non-exclusive license. The id arrives by e-mail at announcement (14:00 ET cutoff, announced 20:00 ET).
 - [ ] After the arXiv id exists: fill the Paper and arXiv buttons in `docs/index.html` (two `TODO on acceptance` comments) and the README's paper link.
+- [ ] v2 on acceptance: switch `repo_sentence` in `make_arxiv.py` back to "are available at", name the venue in Comments (see `overleaf/arxiv/SUBMISSION_NOTES.md`), replace via the arXiv "Replace" action.
 
 ## 4. Repository and project page
 
