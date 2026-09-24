@@ -1,16 +1,27 @@
 # M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals
 
+[![NeurIPS 2026](https://img.shields.io/badge/NeurIPS-2026-4b2e83)](https://neurips.cc/Conferences/2026)
 [Project page](https://dsilvavinicius.github.io/m-plicits) ·
 [Paper](docs/assets/m-plicits.pdf) (PDF; arXiv link on announcement) ·
 [Data & models](https://github.com/dsilvavinicius/m-plicits/releases)
 
-Official code release. M-plicits models a signed distance function as a
-base SIREN plus a sequence of residual SIRENs, each supervised only inside
-the adaptive δ-band of the previous level's zero-level set. The nesting is
-a training-time invariant that the inference algorithms exploit: multiscale
-sphere tracing, band-culled marching cubes, GEMM-based analytical normals,
-and neural normal/texture mapping — real-time rendering from a compact
-model, with strong robustness to input noise.
+Official implementation of the **NeurIPS 2026** paper *M-plicits: Neural
+Implicit Surfaces via Nested Multiscale Residuals* (Vinícius da Silva,
+Isabelle Melo, Matheus Bessa, Guilherme Schardong, Luiz Schirmer, André
+Araújo, Nuno Gonçalves, Hélio Lopes, Alberto Raposo, Luiz Velho, Tiago
+Novello).
+
+![Noisy input, iNGP and M-plicits reconstructions of the same scan with 1% noise](docs/assets/readme_noise.jpg)
+
+M-plicits models a signed distance function as a base SIREN plus a sequence
+of residual SIRENs, each supervised only inside the adaptive δ-band of the
+previous level's zero-level set. The nesting is a training-time invariant
+that the inference algorithms exploit: multiscale sphere tracing,
+band-culled marching cubes, GEMM-based analytical normals, and neural
+normal/texture mapping — real-time rendering from a compact model, with
+strong robustness to input noise. The coarse network never sees the
+high-frequency noise, so the surface stays clean where grid-based methods
+absorb it.
 
 ## Repository map
 
@@ -84,6 +95,8 @@ python reconstruct.py out/$S/fine/best.pth out/$S/mesh.ply -r 512 --device cuda 
 ablations; they are not the released models.)
 
 ## Real-time renderer
+
+![Thai statue rendered live: coarse level only, full detail with all levels, and neural normal mapping](docs/assets/readme_realtime.jpg)
 
 Build per `renderer/README.md`, then from `renderer/cuda/build/Release`:
 
