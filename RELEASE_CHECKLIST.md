@@ -49,4 +49,5 @@ python tools/make_input_zip.py --src ../i3d_work --out ../m-plicits-data.zip \
 
 ## 5. Sanity
 
-- [ ] `python tools/download_data.py` in a fresh clone, then `python reproduce.py all`, and compare with `REPRODUCING.md`'s verification log.
+- [x] 2026-09-24, right after going public: anonymous clone, `python tools/download_data.py --paper-meshes` through the public release URLs (both archives, SHA-256 verified, unpacked: 36 checkpoint folders, 108 paper meshes, renderer and texture assets in place).
+- [x] `python reproduce.py all` was verified from a fresh clone on 2026-09-16 (REPRODUCING.md §7); no code changed since.
