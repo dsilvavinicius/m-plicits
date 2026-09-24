@@ -3,14 +3,13 @@
 Everything below is prepared; the steps are the ones that make things
 public or need the final author information. Work top to bottom.
 
-State on 2026-09-23: data on GitHub release v1.0, arXiv v1 submitted (id
-pending), camera-ready wrapper and PDF built (the page's Paper link is the
-camera-ready copy), arXiv v2 package pre-built with the "are available"
-wording. What is left for a positive decision, in order: make the
-repository public and enable Pages (step 4), arXiv v2 once v1 is announced
-and the decision allows naming the venue (step 3), the arXiv links when the
-id arrives (step 3, not tied to the decision), the public-download sanity
-run (step 5).
+State on 2026-09-24 (accepted as a poster): repository public, Pages live,
+data on GitHub release v1.0, camera-ready wrapper and PDF built (the page's
+Paper link is the camera-ready copy), arXiv v1 submitted (id pending
+announcement), arXiv v2 package pre-built with the "are available" wording.
+Left: the arXiv links and v2 once v1 is announced (step 3), the camera-ready
+upload to OpenReview by the deadline in the acceptance e-mail, and the
+public-download run (step 5).
 
 ## 1. Authors and links
 
@@ -44,10 +43,9 @@ python tools/make_input_zip.py --src ../i3d_work --out ../m-plicits-data.zip \
 
 ## 4. Repository and project page
 
-- [ ] Commit the above; `git push`.
-- [ ] Make the repository public: `gh repo edit dsilvavinicius/m-plicits --visibility public --accept-visibility-change-consequences`.
-- [ ] Enable Pages from `main` / `docs`: `gh api -X POST repos/dsilvavinicius/m-plicits/pages -f "source[branch]=main" -f "source[path]=/docs"` (or Settings → Pages). Pages sites are public even for private repositories, which is why this is an acceptance-day step. The page is served at https://dsilvavinicius.github.io/m-plicits/ and already carries absolute social-card URLs and a `.nojekyll` marker.
-- [ ] Check the page's video plays and the slider works on the live URL.
+- [x] Accepted (poster) on 2026-09-24. Repository made public the same day (`gh api -X PATCH repos/dsilvavinicius/m-plicits -F private=false`; the installed `gh` lacks the `--accept-visibility-change-consequences` flag), homepage set to the project page, description and topics added.
+- [x] Pages enabled from `main` / `docs` (`gh api -X POST repos/dsilvavinicius/m-plicits/pages -f "source[branch]=main" -f "source[path]=/docs"`); first build finished within a minute, HTTPS enforced. Live at https://dsilvavinicius.github.io/m-plicits/.
+- [x] Live checks 2026-09-24: fonts loaded, 39 images without a broken one, video ready (25 s), slider and tabs present, Paper link serves the PDF, social-card image reachable, no console errors.
 
 ## 5. Sanity
 
