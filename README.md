@@ -1,8 +1,10 @@
 # M-plicits: Neural Implicit Surfaces via Nested Multiscale Residuals
 
 [![NeurIPS 2026](https://img.shields.io/badge/NeurIPS-2026-4b2e83)](https://neurips.cc/Conferences/2026)
+[![arXiv](https://img.shields.io/badge/arXiv-2609.28684-b31b1b)](https://arxiv.org/abs/2609.28684)
 [Project page](https://dsilvavinicius.github.io/m-plicits) ·
-[Paper](docs/assets/m-plicits.pdf) (PDF; arXiv link on announcement) ·
+[Paper](docs/assets/m-plicits.pdf) (PDF) ·
+[arXiv](https://arxiv.org/abs/2609.28684) ·
 [Data & models](https://github.com/dsilvavinicius/m-plicits/releases)
 
 Official implementation of the **NeurIPS 2026** paper *M-plicits: Neural
