@@ -25,6 +25,10 @@ strong robustness to input noise. The coarse network never sees the
 high-frequency noise, so the surface stays clean where grid-based methods
 absorb it.
 
+[![Two-minute walkthrough of M-plicits, animated by Matheus Bessa (YouTube)](https://img.youtube.com/vi/VQ9KHMYBMEw/maxresdefault.jpg)](https://www.youtube.com/watch?v=VQ9KHMYBMEw)
+
+*Two-minute walkthrough of the method, animated by [Matheus Bessa](https://matheuslevy.github.io/MatheusLevy/). Click to watch on YouTube.*
+
 ## Repository map
 
 | Folder / file | Contents |

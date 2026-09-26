@@ -92,7 +92,8 @@ section{padding:72px 0 8px}
 h2{font-family:var(--serif);font-weight:400;font-size:42px;line-height:1.08;letter-spacing:-.01em;margin:10px 0 12px}
 p.body{color:#3b404c;font-size:16.5px;max-width:720px}
 .howvid{margin:26px 0 6px}
-.howvid video{display:block;width:100%;max-width:960px;border-radius:12px;border:1px solid var(--line);background:#0b1020}
+.howvid .yt{position:relative;width:100%;max-width:960px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0b1020}
+.howvid .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .howvid figcaption{font-size:13.5px;color:var(--muted);margin-top:8px}
 .howvid figcaption a{color:inherit}
 .how{display:grid;grid-template-columns:400px 1fr;gap:48px;align-items:start;margin-top:30px}
@@ -199,8 +200,8 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <h2>Residuals that only ever see the surface.</h2>
 <p class="body">The representation is a sum of small networks. Each one after the first is trained inside a thin, shrinking band around the previous surface, so the noise living off-surface is never fitted.</p>
 <figure class="howvid" id="video1">
-<video controls preload="metadata" playsinline poster="assets/method_animation_poster.jpg" src="assets/method_animation.mp4" aria-label="Video 1: animated two-minute walkthrough of M-plicits"></video>
-<figcaption><b>Video 1.</b> Two-minute walkthrough of the method, animated by <a href="https://matheuslevy.github.io/MatheusLevy/">Matheus Bessa</a>. Sound on.</figcaption>
+<div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/VQ9KHMYBMEw?rel=0" title="Video 1: An introduction to M-plicits (two-minute animated walkthrough)" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+<figcaption><b>Video 1.</b> Two-minute walkthrough of the method, animated by <a href="https://matheuslevy.github.io/MatheusLevy/">Matheus Bessa</a>. Also on <a href="https://www.youtube.com/watch?v=VQ9KHMYBMEw">YouTube</a>. Sound on.</figcaption>
 </figure>
 <div class="how">
 <img src="assets/method_block.jpg" alt="Residual multiscale representation: base plus residual equals sum; sampling only near the surface">
