@@ -154,7 +154,7 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <div class="hero">
 <div class="wrap">
 <nav><div class="in"><div class="logo">M&#8209;plicits</div><div class="links">
-<a href="#how">How it works</a><a href="#results">Results</a><a href="#video">Video</a><a href="#realtime">Real time</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
+<a href="#how">How it works</a><a href="#results">Results</a><a href="#video1">Video 1</a><a href="#video2">Video 2</a><a href="#realtime">Real time</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
 
 <div class="hgrid">
 <div>
@@ -167,7 +167,8 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <a class="btn primary" href="https://arxiv.org/abs/2609.28684">&#128196; Paper</a>
 <a class="btn" href="https://github.com/dsilvavinicius/m-plicits">Code</a>
 <a class="btn" href="https://github.com/dsilvavinicius/m-plicits/releases">Data &amp; models</a>
-<a class="btn" href="#video">&#9654;&nbsp;Video</a>
+<a class="btn" href="#video1">&#9654;&nbsp;Video 1</a>
+<a class="btn" href="#video2">&#9654;&nbsp;Video 2</a>
 </div>
 </div>
 
@@ -197,9 +198,9 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <div class="sec-k">How it works</div>
 <h2>Residuals that only ever see the surface.</h2>
 <p class="body">The representation is a sum of small networks. Each one after the first is trained inside a thin, shrinking band around the previous surface, so the noise living off-surface is never fitted.</p>
-<figure class="howvid">
-<video controls preload="metadata" playsinline poster="assets/method_animation_poster.jpg" src="assets/method_animation.mp4" aria-label="Animated two-minute walkthrough of M-plicits"></video>
-<figcaption>Two-minute walkthrough of the method, animated by <a href="https://matheuslevy.github.io/MatheusLevy/">Matheus Bessa</a>. Sound on.</figcaption>
+<figure class="howvid" id="video1">
+<video controls preload="metadata" playsinline poster="assets/method_animation_poster.jpg" src="assets/method_animation.mp4" aria-label="Video 1: animated two-minute walkthrough of M-plicits"></video>
+<figcaption><b>Video 1.</b> Two-minute walkthrough of the method, animated by <a href="https://matheuslevy.github.io/MatheusLevy/">Matheus Bessa</a>. Sound on.</figcaption>
 </figure>
 <div class="how">
 <img src="assets/method_block.jpg" alt="Residual multiscale representation: base plus residual equals sum; sampling only near the surface">
@@ -225,8 +226,8 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <div class="gcap">Rendered from the paper's reconstructions with identical cameras. Comparisons against BACON, IDF and screened Poisson are in the paper.</div>
 </div></section>
 
-<section id="video"><div class="wrap">
-<div class="sec-k">Video</div>
+<section id="video"><div class="wrap" id="video2">
+<div class="sec-k">Video 2 &middot; Results</div>
 <h2>The same scans, in motion.</h2>
 <div class="videocard">
 <video controls preload="metadata" poster="assets/poster.jpg">
