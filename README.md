@@ -5,7 +5,8 @@
 [Project page](https://dsilvavinicius.github.io/m-plicits) ·
 [Paper](docs/assets/m-plicits.pdf) (PDF) ·
 [arXiv](https://arxiv.org/abs/2609.28684) ·
-[Data & models](https://github.com/dsilvavinicius/m-plicits/releases)
+[Models](https://huggingface.co/dsilvavinicius/m-plicits) ·
+[Data](https://github.com/dsilvavinicius/m-plicits/releases)
 
 Official implementation of the **NeurIPS 2026** paper *M-plicits: Neural
 Implicit Surfaces via Nested Multiscale Residuals* (Vinícius da Silva,
@@ -58,6 +59,12 @@ environment (`metrics/environment.yml`); the renderer (`renderer/README.md`)
 and the texture code (`attributes/README.md`) have their own notes.
 
 ## Data
+
+The [Hugging Face model release](https://huggingface.co/dsilvavinicius/m-plicits)
+provides 105 surface checkpoints for 36 shapes, their original training
+configurations, adaptive inference bands, and reconstruction examples.
+The archives below also include experimental inputs, renderer examples,
+and texture assets.
 
 ```bash
 python tools/download_data.py                 # inputs + released models (1.2 GB), unpacked in place
