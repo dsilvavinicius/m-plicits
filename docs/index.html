@@ -128,6 +128,17 @@ p.body{color:#3b404c;font-size:16.5px;max-width:720px}
 .rt .tile img{width:100%;display:block;aspect-ratio:420/440;object-fit:cover}
 .rt .tile .t{padding:9px 12px;font-size:13px;color:var(--muted)}
 
+/* ---------- conference poster ---------- */
+.poster{padding:64px 0 72px;scroll-margin-top:24px}
+.poster-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:24px}
+.poster h2{margin-bottom:0}
+.poster .btn{background:var(--navy);border-color:var(--navy);color:#fff}
+.poster .btn:hover{background:var(--navy2);border-color:var(--amber);color:var(--amber)}
+.poster-preview{display:block;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:var(--navy);cursor:zoom-in}
+.poster-preview:focus-visible{outline:3px solid var(--amber);outline-offset:4px}
+.poster-preview img{display:block;width:100%;height:auto}
+.poster figcaption{margin-top:12px;color:var(--muted);font-size:13.5px}
+
 /* ---------- footer band ---------- */
 .foot{background:var(--navy);color:#fff;padding:64px 0 36px;margin-top:8px}
 .res{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
@@ -155,7 +166,7 @@ pre{background:var(--navy2);border:1px solid rgba(255,255,255,.1);border-radius:
 <div class="hero">
 <div class="wrap">
 <nav><div class="in"><div class="logo">M&#8209;plicits</div><div class="links">
-<a href="#how">How it works</a><a href="#results">Results</a><a href="#video1">Video 1</a><a href="#video2">Video 2</a><a href="#realtime">Real time</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
+<a href="#how">How it works</a><a href="#results">Results</a><a href="#video1">Video 1</a><a href="#video2">Video 2</a><a href="#realtime">Real time</a><a href="#poster">Poster</a><a href="#resources">Resources</a><a href="#bib">BibTeX</a></div></div></nav>
 
 <div class="hgrid">
 <div>
@@ -258,6 +269,19 @@ Your browser does not support the video tag &mdash; <a href="assets/results.mp4"
 </div>
 <div class="gcap" id="rtcap">Sphere tracing with 20 iterations on the coarse SDF and 5 with each residual level added.</div>
 </div></div>
+
+<section class="poster" id="poster" aria-labelledby="poster-title"><div class="wrap">
+<div class="poster-head">
+<div><div class="sec-k">NeurIPS 2026</div><h2 id="poster-title">Conference poster</h2></div>
+<a class="btn" href="assets/m-plicits-poster.pdf" download="m-plicits-poster.pdf">Download poster PDF</a>
+</div>
+<figure>
+<a class="poster-preview" href="assets/m-plicits-poster.pdf" target="_blank" rel="noopener" aria-label="Open the full-resolution M-plicits poster PDF in a new tab">
+<img src="assets/m-plicits-poster.png" width="4481" height="2880" loading="lazy" decoding="async" alt="M-plicits conference poster: nested residual surface representation, noise robustness results, multiscale rendering and extraction, analytical normals, texture fields, and reconstruction from posed images.">
+</a>
+<figcaption>Click the poster to open the full-resolution PDF.</figcaption>
+</figure>
+</div></section>
 
 <div class="foot"><div class="wrap">
 <div class="sec-k" id="resources" style="color:var(--amber)">Resources</div>
